@@ -72,22 +72,25 @@ module LDPC_Dec(
 
 	input [1:0] decoder_id,
 
-	input [`Zc*`VWidth-1:0] APPmsg_ini_subx_0,
+	input [`Zc*`VWidth-1:0] APPmsg_ini_subx_0, //
 	input [`Zc*`VWidth-1:0] APPmsg_ini_subx_1,
 	input [`Zc*`VWidth-1:0] APPmsg_ini_subx_2,
 	input [`Zc*`VWidth-1:0] APPmsg_ini_subx_3,
 	input [`Zc*`VWidth-1:0] APPmsg_ini_subx_4,
 	input [`Zc*`VWidth-1:0] APPmsg_ini_subx_5,
-	input [1:0] APPmsg_ini_sub_x, //控制第几段数据 [1,2,3,4,5,6] 
-	input buffer_valid,
-	input buffer_start,
-	input buffer_last,
+	input [`Zc*`VWidth-1:0] APPmsg_ini_subx_6,
+	input [`Zc*`VWidth-1:0] APPmsg_ini_subx_7,
+
+	input [1:0] APPmsg_ini_sub_x, //控制第几段数据 7/8码率[0,1,2] 2/3码率[0,1,2,3] 如果第4段需要特殊处理
+	input buffer_valid, //输入有效 //深度16
+	input buffer_start, //输入开始 //深度16
+	input buffer_last, //输入完成
 
 	input [2:0] iLs,
 	input [2:0] jLs,
 	input [5:0] P,
-	input [`APP_addr_width-1:0] APP_addr_max,
-	input [`APP_addr_width-2:0] APP_addr_rd_max,
+	input [`APP_addr_width-1:0] APP_addr_max, //输入深度16
+	input [`APP_addr_width-2:0] APP_addr_rd_max, //最大地址15
 
 	output reg   			buffer_ready,
 	output reg  			decode_valid,
@@ -155,10 +158,11 @@ wire [`APP_addr_width-2:0]  APP_addr_rd_ini_0,APP_addr_rd_ini_1,APP_addr_rd_ini_
            APP_addr_rd_ini_10,APP_addr_rd_ini_11,APP_addr_rd_ini_12,APP_addr_rd_ini_13,APP_addr_rd_ini_14,APP_addr_rd_ini_15,APP_addr_rd_ini_16,APP_addr_rd_ini_17,APP_addr_rd_ini_18,APP_addr_rd_ini_19,
            APP_addr_rd_ini_20,APP_addr_rd_ini_21,APP_addr_rd_ini_22,APP_addr_rd_ini_23,APP_addr_rd_ini_24,APP_addr_rd_ini_25,APP_addr_rd_ini_26;	
 reg [`APP_addr_width-2:0]  APP_addr_rd_0,APP_addr_rd_1,APP_addr_rd_2,APP_addr_rd_3,APP_addr_rd_4,APP_addr_rd_5,APP_addr_rd_6,APP_addr_rd_7,APP_addr_rd_8,APP_addr_rd_9,APP_addr_rd_10,APP_addr_rd_11,APP_addr_rd_12,APP_addr_rd_13,APP_addr_rd_14,APP_addr_rd_15,APP_addr_rd_16,APP_addr_rd_17,APP_addr_rd_18,APP_addr_rd_19,APP_addr_rd_20,APP_addr_rd_21,APP_addr_rd_22,APP_addr_rd_23,APP_addr_rd_24,APP_addr_rd_25;
-
+reg [7:0]  APP_addr_rd_26;
 
 reg [`APP_addr_width-2:0] APP_wr_en_cnt;
 reg [`APP_addr_width-2:0]  APP_addr_wr_0,APP_addr_wr_1,APP_addr_wr_2,APP_addr_wr_3,APP_addr_wr_4,APP_addr_wr_5,APP_addr_wr_6,APP_addr_wr_7,APP_addr_wr_8,APP_addr_wr_9,APP_addr_wr_10,APP_addr_wr_11,APP_addr_wr_12,APP_addr_wr_13,APP_addr_wr_14,APP_addr_wr_15,APP_addr_wr_16,APP_addr_wr_17,APP_addr_wr_18,APP_addr_wr_19,APP_addr_wr_20,APP_addr_wr_21,APP_addr_wr_22,APP_addr_wr_23,APP_addr_wr_24,APP_addr_wr_25;
+reg [7:0] APP_addr_wr_26;
 
 reg APP_wr_en_D0;
 
@@ -189,7 +193,7 @@ assign APPmsg_old_26 = 'd0;
 reg [`APPdata_Len-1:0] APPmsg_old_26_D0,APPmsg_old_26_D1;				  
 wire [`APPdata_Len-1:0] APPmsg_new_0,APPmsg_new_1,APPmsg_new_2,APPmsg_new_3,APPmsg_new_4,APPmsg_new_5,APPmsg_new_6,APPmsg_new_7,APPmsg_new_8,APPmsg_new_9,
                   APPmsg_new_10,APPmsg_new_11,APPmsg_new_12,APPmsg_new_13,APPmsg_new_14,APPmsg_new_15,APPmsg_new_16,APPmsg_new_17,APPmsg_new_18,APPmsg_new_19,
-                  APPmsg_new_20,APPmsg_new_21,APPmsg_new_22,APPmsg_new_23,APPmsg_new_24,APPmsg_new_25;
+                  APPmsg_new_20,APPmsg_new_21,APPmsg_new_22,APPmsg_new_23,APPmsg_new_24,APPmsg_new_25,APPmsg_new_26;
 wire [`APPdata_Len-1:0] QSN_APPmsg_0,QSN_APPmsg_1,QSN_APPmsg_2,QSN_APPmsg_3,QSN_APPmsg_4,QSN_APPmsg_5,QSN_APPmsg_6,QSN_APPmsg_7,QSN_APPmsg_8,QSN_APPmsg_9,
                   QSN_APPmsg_10,QSN_APPmsg_11,QSN_APPmsg_12,QSN_APPmsg_13,QSN_APPmsg_14,QSN_APPmsg_15,QSN_APPmsg_16,QSN_APPmsg_17,QSN_APPmsg_18,QSN_APPmsg_19,
                   QSN_APPmsg_20,QSN_APPmsg_21,QSN_APPmsg_22,QSN_APPmsg_23,QSN_APPmsg_24,QSN_APPmsg_25;
@@ -348,22 +352,27 @@ reg APP_addr_rd_end_D0,APP_addr_rd_end_D1;
  // - Decode 阶段：由 APP_decodin_wr_en 与 `~shift_*[HijWidth-1]` 决定是否写回；
  // - 非当前阶段或非当前组：全部 0。
  // =============================================================================,G1
-reg APP_G0_wr_en_0,APP_G0_wr_en_1,APP_G0_wr_en_2,APP_G0_wr_en_3,APP_G0_wr_en_4,APP_G0_wr_en_5,APP_G0_wr_en_6,APP_G0_wr_en_7,APP_G0_wr_en_8,APP_G0_wr_en_9,APP_G0_wr_en_10,APP_G0_wr_en_11,APP_G0_wr_en_12,APP_G0_wr_en_13,APP_G0_wr_en_14,APP_G0_wr_en_15,APP_G0_wr_en_16,APP_G0_wr_en_17,APP_G0_wr_en_18,APP_G0_wr_en_19,APP_G0_wr_en_20,APP_G0_wr_en_21,APP_G0_wr_en_22,APP_G0_wr_en_23,APP_G0_wr_en_24,APP_G0_wr_en_25;
-reg APP_G1_wr_en_0,APP_G1_wr_en_1,APP_G1_wr_en_2,APP_G1_wr_en_3,APP_G1_wr_en_4,APP_G1_wr_en_5,APP_G1_wr_en_6,APP_G1_wr_en_7,APP_G1_wr_en_8,APP_G1_wr_en_9,APP_G1_wr_en_10,APP_G1_wr_en_11,APP_G1_wr_en_12,APP_G1_wr_en_13,APP_G1_wr_en_14,APP_G1_wr_en_15,APP_G1_wr_en_16,APP_G1_wr_en_17,APP_G1_wr_en_18,APP_G1_wr_en_19,APP_G1_wr_en_20,APP_G1_wr_en_21,APP_G1_wr_en_22,APP_G1_wr_en_23,APP_G1_wr_en_24,APP_G1_wr_en_25;
+reg APP_G0_wr_en_0,APP_G0_wr_en_1,APP_G0_wr_en_2,APP_G0_wr_en_3,APP_G0_wr_en_4,APP_G0_wr_en_5,APP_G0_wr_en_6,APP_G0_wr_en_7,APP_G0_wr_en_8,APP_G0_wr_en_9,APP_G0_wr_en_10,APP_G0_wr_en_11,APP_G0_wr_en_12,APP_G0_wr_en_13,APP_G0_wr_en_14,APP_G0_wr_en_15,APP_G0_wr_en_16,APP_G0_wr_en_17,APP_G0_wr_en_18,APP_G0_wr_en_19,APP_G0_wr_en_20,APP_G0_wr_en_21,APP_G0_wr_en_22,APP_G0_wr_en_23,APP_G0_wr_en_24,APP_G0_wr_en_25,APP_G0_wr_en_26;
+reg APP_G1_wr_en_0,APP_G1_wr_en_1,APP_G1_wr_en_2,APP_G1_wr_en_3,APP_G1_wr_en_4,APP_G1_wr_en_5,APP_G1_wr_en_6,APP_G1_wr_en_7,APP_G1_wr_en_8,APP_G1_wr_en_9,APP_G1_wr_en_10,APP_G1_wr_en_11,APP_G1_wr_en_12,APP_G1_wr_en_13,APP_G1_wr_en_14,APP_G1_wr_en_15,APP_G1_wr_en_16,APP_G1_wr_en_17,APP_G1_wr_en_18,APP_G1_wr_en_19,APP_G1_wr_en_20,APP_G1_wr_en_21,APP_G1_wr_en_22,APP_G1_wr_en_23,APP_G1_wr_en_24,APP_G1_wr_en_25,APP_G1_wr_en_26;
 
 // write address of APPRam G0,G1
 reg [`APP_addr_width-2:0] APP_G0_addr_wr_0,APP_G0_addr_wr_1,APP_G0_addr_wr_2,APP_G0_addr_wr_3,APP_G0_addr_wr_4,APP_G0_addr_wr_5,APP_G0_addr_wr_6,APP_G0_addr_wr_7,APP_G0_addr_wr_8,APP_G0_addr_wr_9,APP_G0_addr_wr_10,APP_G0_addr_wr_11,APP_G0_addr_wr_12,APP_G0_addr_wr_13,APP_G0_addr_wr_14,APP_G0_addr_wr_15,APP_G0_addr_wr_16,APP_G0_addr_wr_17,APP_G0_addr_wr_18,APP_G0_addr_wr_19,APP_G0_addr_wr_20,APP_G0_addr_wr_21,APP_G0_addr_wr_22,APP_G0_addr_wr_23,APP_G0_addr_wr_24,APP_G0_addr_wr_25;
+reg [7:0] APP_G0_addr_wr_26;
 reg [`APP_addr_width-2:0] APP_G1_addr_wr_0,APP_G1_addr_wr_1,APP_G1_addr_wr_2,APP_G1_addr_wr_3,APP_G1_addr_wr_4,APP_G1_addr_wr_5,APP_G1_addr_wr_6,APP_G1_addr_wr_7,APP_G1_addr_wr_8,APP_G1_addr_wr_9,APP_G1_addr_wr_10,APP_G1_addr_wr_11,APP_G1_addr_wr_12,APP_G1_addr_wr_13,APP_G1_addr_wr_14,APP_G1_addr_wr_15,APP_G1_addr_wr_16,APP_G1_addr_wr_17,APP_G1_addr_wr_18,APP_G1_addr_wr_19,APP_G1_addr_wr_20,APP_G1_addr_wr_21,APP_G1_addr_wr_22,APP_G1_addr_wr_23,APP_G1_addr_wr_24,APP_G1_addr_wr_25;
+reg [7:0] APP_G1_addr_wr_26;
 
 reg [`APP_addr_width-2:0] APPmsg_ini_addr,APPmsg_ini_addr_D0;
+reg [7:0] APPmsg_ini_addr_26;
+
 reg [`APP_addr_width-2:0] APPmsg_ini_addr_C0,APPmsg_ini_addr_C1,APPmsg_ini_addr_C2,APPmsg_ini_addr_C3,APPmsg_ini_addr_C4,APPmsg_ini_addr_C5,APPmsg_ini_addr_C6,APPmsg_ini_addr_C7,APPmsg_ini_addr_C8,APPmsg_ini_addr_C9,APPmsg_ini_addr_C10,APPmsg_ini_addr_C11,APPmsg_ini_addr_C12,APPmsg_ini_addr_C13,APPmsg_ini_addr_C14,APPmsg_ini_addr_C15,APPmsg_ini_addr_C16,APPmsg_ini_addr_C17,APPmsg_ini_addr_C18,APPmsg_ini_addr_C19,APPmsg_ini_addr_C20,APPmsg_ini_addr_C21,APPmsg_ini_addr_C22,APPmsg_ini_addr_C23,APPmsg_ini_addr_C24,APPmsg_ini_addr_C25;
 reg [`APP_addr_width-2:0] APPmsg_ini_addr_D0_C0,APPmsg_ini_addr_D0_C1,APPmsg_ini_addr_D0_C2,APPmsg_ini_addr_D0_C3,APPmsg_ini_addr_D0_C4,APPmsg_ini_addr_D0_C5,APPmsg_ini_addr_D0_C6,APPmsg_ini_addr_D0_C7,APPmsg_ini_addr_D0_C8,APPmsg_ini_addr_D0_C9,APPmsg_ini_addr_D0_C10,APPmsg_ini_addr_D0_C11,APPmsg_ini_addr_D0_C12,APPmsg_ini_addr_D0_C13,APPmsg_ini_addr_D0_C14,APPmsg_ini_addr_D0_C15,APPmsg_ini_addr_D0_C16,APPmsg_ini_addr_D0_C17,APPmsg_ini_addr_D0_C18,APPmsg_ini_addr_D0_C19,APPmsg_ini_addr_D0_C20,APPmsg_ini_addr_D0_C21,APPmsg_ini_addr_D0_C22,APPmsg_ini_addr_D0_C23,APPmsg_ini_addr_D0_C24,APPmsg_ini_addr_D0_C25;
+reg [7:0] APPmsg_ini_addr_D0_C26;
 
 // write data of APPRam G0,G1
-reg [`inNum*`VWidth-1:0] APPmsg_G0_in_0,APPmsg_G0_in_1,APPmsg_G0_in_2,APPmsg_G0_in_3,APPmsg_G0_in_4,APPmsg_G0_in_5,APPmsg_G0_in_6,APPmsg_G0_in_7,APPmsg_G0_in_8,APPmsg_G0_in_9,APPmsg_G0_in_10,APPmsg_G0_in_11,APPmsg_G0_in_12,APPmsg_G0_in_13,APPmsg_G0_in_14,APPmsg_G0_in_15,APPmsg_G0_in_16,APPmsg_G0_in_17,APPmsg_G0_in_18,APPmsg_G0_in_19,APPmsg_G0_in_20,APPmsg_G0_in_21,APPmsg_G0_in_22,APPmsg_G0_in_23,APPmsg_G0_in_24,APPmsg_G0_in_25;
-reg [`inNum*`VWidth-1:0] APPmsg_G1_in_0,APPmsg_G1_in_1,APPmsg_G1_in_2,APPmsg_G1_in_3,APPmsg_G1_in_4,APPmsg_G1_in_5,APPmsg_G1_in_6,APPmsg_G1_in_7,APPmsg_G1_in_8,APPmsg_G1_in_9,APPmsg_G1_in_10,APPmsg_G1_in_11,APPmsg_G1_in_12,APPmsg_G1_in_13,APPmsg_G1_in_14,APPmsg_G1_in_15,APPmsg_G1_in_16,APPmsg_G1_in_17,APPmsg_G1_in_18,APPmsg_G1_in_19,APPmsg_G1_in_20,APPmsg_G1_in_21,APPmsg_G1_in_22,APPmsg_G1_in_23,APPmsg_G1_in_24,APPmsg_G1_in_25;
+reg [`inNum*`VWidth-1:0] APPmsg_G0_in_0,APPmsg_G0_in_1,APPmsg_G0_in_2,APPmsg_G0_in_3,APPmsg_G0_in_4,APPmsg_G0_in_5,APPmsg_G0_in_6,APPmsg_G0_in_7,APPmsg_G0_in_8,APPmsg_G0_in_9,APPmsg_G0_in_10,APPmsg_G0_in_11,APPmsg_G0_in_12,APPmsg_G0_in_13,APPmsg_G0_in_14,APPmsg_G0_in_15,APPmsg_G0_in_16,APPmsg_G0_in_17,APPmsg_G0_in_18,APPmsg_G0_in_19,APPmsg_G0_in_20,APPmsg_G0_in_21,APPmsg_G0_in_22,APPmsg_G0_in_23,APPmsg_G0_in_24,APPmsg_G0_in_25,APPmsg_G0_in_26;
+reg [`inNum*`VWidth-1:0] APPmsg_G1_in_0,APPmsg_G1_in_1,APPmsg_G1_in_2,APPmsg_G1_in_3,APPmsg_G1_in_4,APPmsg_G1_in_5,APPmsg_G1_in_6,APPmsg_G1_in_7,APPmsg_G1_in_8,APPmsg_G1_in_9,APPmsg_G1_in_10,APPmsg_G1_in_11,APPmsg_G1_in_12,APPmsg_G1_in_13,APPmsg_G1_in_14,APPmsg_G1_in_15,APPmsg_G1_in_16,APPmsg_G1_in_17,APPmsg_G1_in_18,APPmsg_G1_in_19,APPmsg_G1_in_20,APPmsg_G1_in_21,APPmsg_G1_in_22,APPmsg_G1_in_23,APPmsg_G1_in_24,APPmsg_G1_in_25,APPmsg_G1_in_26;
 
-wire [`inNum*`VWidth-1:0] APPmsg_ini_data_subx_0,APPmsg_ini_data_subx_1,APPmsg_ini_data_subx_2,APPmsg_ini_data_subx_3,APPmsg_ini_data_subx_4,APPmsg_ini_data_subx_5;
+wire [`inNum*`VWidth-1:0] APPmsg_ini_data_subx_0,APPmsg_ini_data_subx_1,APPmsg_ini_data_subx_2,APPmsg_ini_data_subx_3,APPmsg_ini_data_subx_4,APPmsg_ini_data_subx_5,APPmsg_ini_data_subx_6,APPmsg_ini_data_subx_7,APPmsg_ini_data_subx_7_or_APPmsg_ini_data_subx_all,APPmsg_ini_data_subx_all;
 
 // read data of APPRam G0,G1
 wire [`inNum*`VWidth-1:0] APPmsg_G0_out_0,APPmsg_G0_out_1,APPmsg_G0_out_2,APPmsg_G0_out_3,APPmsg_G0_out_4,APPmsg_G0_out_5,APPmsg_G0_out_6,APPmsg_G0_out_7,APPmsg_G0_out_8,APPmsg_G0_out_9,APPmsg_G0_out_10,APPmsg_G0_out_11,APPmsg_G0_out_12,APPmsg_G0_out_13,APPmsg_G0_out_14,APPmsg_G0_out_15,APPmsg_G0_out_16,APPmsg_G0_out_17,APPmsg_G0_out_18,APPmsg_G0_out_19,APPmsg_G0_out_20,APPmsg_G0_out_21,APPmsg_G0_out_22,APPmsg_G0_out_23,APPmsg_G0_out_24,APPmsg_G0_out_25;
@@ -717,15 +726,15 @@ begin
 		0:
 		begin
 			APP_G0_wr_en_0  = buffer_valid_D0;
-			APP_G0_wr_en_1  = buffer_valid_D0;
+			APP_G0_wr_en_1  = buffer_valid_D0; //0
 			APP_G0_wr_en_2  = buffer_valid_D0;
 			APP_G0_wr_en_3  = buffer_valid_D0;
 			APP_G0_wr_en_4  = buffer_valid_D0;
 			APP_G0_wr_en_5  = buffer_valid_D0;
 			APP_G0_wr_en_6  = buffer_valid_D0;
 			APP_G0_wr_en_7  = buffer_valid_D0;
-			APP_G0_wr_en_8  = 0;
-			APP_G0_wr_en_9  = 0;
+			APP_G0_wr_en_8  = buffer_valid_D0;
+			APP_G0_wr_en_9  = buffer_valid_D0;
 			APP_G0_wr_en_10 = 0;
 			APP_G0_wr_en_11 = 0;
 			APP_G0_wr_en_12 = 0;
@@ -741,7 +750,8 @@ begin
 			APP_G0_wr_en_22 = 0;
 			APP_G0_wr_en_23 = 0;
 			APP_G0_wr_en_24 = 0;
-			APP_G0_wr_en_25 = 0;			
+			APP_G0_wr_en_25 = 0;
+			APP_G0_wr_en_26 = 0;			
 		end
 		1:
 		begin
@@ -753,16 +763,16 @@ begin
 			APP_G0_wr_en_5  = 0;
 			APP_G0_wr_en_6  = 0;
 			APP_G0_wr_en_7  = 0;
-			APP_G0_wr_en_8  = buffer_valid_D0;
-			APP_G0_wr_en_9  = buffer_valid_D0;
+			APP_G0_wr_en_8  = 0;
+			APP_G0_wr_en_9  = 0;
 			APP_G0_wr_en_10 = buffer_valid_D0;
 			APP_G0_wr_en_11 = buffer_valid_D0;
 			APP_G0_wr_en_12 = buffer_valid_D0;
 			APP_G0_wr_en_13 = buffer_valid_D0;
-			APP_G0_wr_en_14 = 0;
-			APP_G0_wr_en_15 = 0;
-			APP_G0_wr_en_16 = 0;
-			APP_G0_wr_en_17 = 0;
+			APP_G0_wr_en_14 = buffer_valid_D0;
+			APP_G0_wr_en_15 = buffer_valid_D0;
+			APP_G0_wr_en_16 = buffer_valid_D0;
+			APP_G0_wr_en_17 = buffer_valid_D0;
 			APP_G0_wr_en_18 = 0;
 			APP_G0_wr_en_19 = 0;
 			APP_G0_wr_en_20 = 0;
@@ -770,7 +780,8 @@ begin
 			APP_G0_wr_en_22 = 0;
 			APP_G0_wr_en_23 = 0;
 			APP_G0_wr_en_24 = 0;
-			APP_G0_wr_en_25 = 0;			
+			APP_G0_wr_en_25 = 0;	
+			APP_G0_wr_en_26 = 0;		
 		end
 		2:
 		begin
@@ -788,18 +799,19 @@ begin
 			APP_G0_wr_en_11 = 0;
 			APP_G0_wr_en_12 = 0;
 			APP_G0_wr_en_13 = 0;
-			APP_G0_wr_en_14 = buffer_valid_D0;
-			APP_G0_wr_en_15 = buffer_valid_D0;
-			APP_G0_wr_en_16 = buffer_valid_D0;
-			APP_G0_wr_en_17 = buffer_valid_D0;
+			APP_G0_wr_en_14 = 0;
+			APP_G0_wr_en_15 = 0;
+			APP_G0_wr_en_16 = 0;
+			APP_G0_wr_en_17 = 0;
 			APP_G0_wr_en_18 = buffer_valid_D0;
 			APP_G0_wr_en_19 = buffer_valid_D0;
-			APP_G0_wr_en_20 = 0;
-			APP_G0_wr_en_21 = 0;
-			APP_G0_wr_en_22 = 0;
-			APP_G0_wr_en_23 = 0;
-			APP_G0_wr_en_24 = 0;
-			APP_G0_wr_en_25 = 0;				
+			APP_G0_wr_en_20 = buffer_valid_D0;
+			APP_G0_wr_en_21 = buffer_valid_D0; // 
+			APP_G0_wr_en_22 = buffer_valid_D0; 
+			APP_G0_wr_en_23 = buffer_valid_D0;
+			APP_G0_wr_en_24 = buffer_valid_D0;
+			APP_G0_wr_en_25 = buffer_valid_D0;
+			APP_G0_wr_en_26 = buffer_valid_D0;				
 		end
 		3:
 		begin
@@ -823,12 +835,13 @@ begin
 			APP_G0_wr_en_17 = 0;
 			APP_G0_wr_en_18 = 0;
 			APP_G0_wr_en_19 = 0;
-			APP_G0_wr_en_20 = buffer_valid_D0;
-			APP_G0_wr_en_21 = buffer_valid_D0;
-			APP_G0_wr_en_22 = buffer_valid_D0;
-			APP_G0_wr_en_23 = buffer_valid_D0;
-			APP_G0_wr_en_24 = buffer_valid_D0;
-			APP_G0_wr_en_25 = buffer_valid_D0;				
+			APP_G0_wr_en_20 = 0;
+			APP_G0_wr_en_21 = 0;
+			APP_G0_wr_en_22 = 0;
+			APP_G0_wr_en_23 = 0;
+			APP_G0_wr_en_24 = 0;
+			APP_G0_wr_en_25 = 0;
+			APP_G0_wr_en_26 = buffer_valid_D0; 				
 		end
 		endcase
 	end
@@ -860,6 +873,7 @@ begin
 		APP_G0_wr_en_23 = APP_decodin_wr_en & ~shift_23[`HijWidth-1];
 		APP_G0_wr_en_24 = APP_decodin_wr_en & ~shift_24[`HijWidth-1];
 		APP_G0_wr_en_25 = APP_decodin_wr_en & ~shift_25[`HijWidth-1];
+		APP_G0_wr_en_26 = APP_decodin_wr_en & share_flag;
 	end
 	else
 	begin
@@ -889,6 +903,7 @@ begin
 		APP_G0_wr_en_23 = 0;
 		APP_G0_wr_en_24 = 0;
 		APP_G0_wr_en_25 = 0;
+		APP_G0_wr_en_26 = 0;
 	end
 end
 // =============================================================================
@@ -910,8 +925,8 @@ begin
 			APP_G1_wr_en_5  = buffer_valid_D0;
 			APP_G1_wr_en_6  = buffer_valid_D0;
 			APP_G1_wr_en_7  = buffer_valid_D0;
-			APP_G1_wr_en_8  = 0;
-			APP_G1_wr_en_9  = 0;
+			APP_G1_wr_en_8  = buffer_valid_D0;
+			APP_G1_wr_en_9  = buffer_valid_D0;
 			APP_G1_wr_en_10 = 0;
 			APP_G1_wr_en_11 = 0;
 			APP_G1_wr_en_12 = 0;
@@ -927,7 +942,8 @@ begin
 			APP_G1_wr_en_22 = 0;
 			APP_G1_wr_en_23 = 0;
 			APP_G1_wr_en_24 = 0;
-			APP_G1_wr_en_25 = 0;			
+			APP_G1_wr_en_25 = 0;
+			APP_G1_wr_en_26 = 0;			
 		end
 		1:
 		begin
@@ -939,16 +955,16 @@ begin
 			APP_G1_wr_en_5  = 0;
 			APP_G1_wr_en_6  = 0;
 			APP_G1_wr_en_7  = 0;
-			APP_G1_wr_en_8  = buffer_valid_D0;
-			APP_G1_wr_en_9  = buffer_valid_D0;
+			APP_G1_wr_en_8  = 0;
+			APP_G1_wr_en_9  = 0;
 			APP_G1_wr_en_10 = buffer_valid_D0;
 			APP_G1_wr_en_11 = buffer_valid_D0;
 			APP_G1_wr_en_12 = buffer_valid_D0;
 			APP_G1_wr_en_13 = buffer_valid_D0;
-			APP_G1_wr_en_14 = 0;
-			APP_G1_wr_en_15 = 0;
-			APP_G1_wr_en_16 = 0;
-			APP_G1_wr_en_17 = 0;
+			APP_G1_wr_en_14 = buffer_valid_D0;
+			APP_G1_wr_en_15 = buffer_valid_D0;
+			APP_G1_wr_en_16 = buffer_valid_D0;
+			APP_G1_wr_en_17 = buffer_valid_D0;
 			APP_G1_wr_en_18 = 0;
 			APP_G1_wr_en_19 = 0;
 			APP_G1_wr_en_20 = 0;
@@ -956,7 +972,8 @@ begin
 			APP_G1_wr_en_22 = 0;
 			APP_G1_wr_en_23 = 0;
 			APP_G1_wr_en_24 = 0;
-			APP_G1_wr_en_25 = 0;			
+			APP_G1_wr_en_25 = 0;
+			APP_G1_wr_en_26 = 0;	
 		end
 		2:
 		begin
@@ -974,18 +991,19 @@ begin
 			APP_G1_wr_en_11 = 0;
 			APP_G1_wr_en_12 = 0;
 			APP_G1_wr_en_13 = 0;
-			APP_G1_wr_en_14 = buffer_valid_D0;
-			APP_G1_wr_en_15 = buffer_valid_D0;
-			APP_G1_wr_en_16 = buffer_valid_D0;
-			APP_G1_wr_en_17 = buffer_valid_D0;
+			APP_G1_wr_en_14 = 0;
+			APP_G1_wr_en_15 = 0;
+			APP_G1_wr_en_16 = 0;
+			APP_G1_wr_en_17 = 0;
 			APP_G1_wr_en_18 = buffer_valid_D0;
 			APP_G1_wr_en_19 = buffer_valid_D0;
-			APP_G1_wr_en_20 = 0;
-			APP_G1_wr_en_21 = 0;
-			APP_G1_wr_en_22 = 0;
-			APP_G1_wr_en_23 = 0;
-			APP_G1_wr_en_24 = 0;
-			APP_G1_wr_en_25 = 0;				
+			APP_G1_wr_en_20 = buffer_valid_D0;
+			APP_G1_wr_en_21 = buffer_valid_D0;
+			APP_G1_wr_en_22 = buffer_valid_D0;
+			APP_G1_wr_en_23 = buffer_valid_D0;
+			APP_G1_wr_en_24 = buffer_valid_D0;
+			APP_G1_wr_en_25 = buffer_valid_D0;
+			APP_G1_wr_en_26 = buffer_valid_D0;				
 		end
 		3:
 		begin
@@ -1009,12 +1027,13 @@ begin
 			APP_G1_wr_en_17 = 0;
 			APP_G1_wr_en_18 = 0;
 			APP_G1_wr_en_19 = 0;
-			APP_G1_wr_en_20 = buffer_valid_D0;
-			APP_G1_wr_en_21 = buffer_valid_D0;
-			APP_G1_wr_en_22 = buffer_valid_D0;
-			APP_G1_wr_en_23 = buffer_valid_D0;
-			APP_G1_wr_en_24 = buffer_valid_D0;
-			APP_G1_wr_en_25 = buffer_valid_D0;				
+			APP_G1_wr_en_20 = 0;
+			APP_G1_wr_en_21 = 0;
+			APP_G1_wr_en_22 = 0;
+			APP_G1_wr_en_23 = 0;
+			APP_G1_wr_en_24 = 0;
+			APP_G1_wr_en_25 = 0;
+			APP_G1_wr_en_26 = buffer_valid_D0;				
 		end
 		endcase
 	end
@@ -1046,6 +1065,7 @@ begin
 		APP_G1_wr_en_23 = APP_decodin_wr_en & ~shift_23[`HijWidth-1];
 		APP_G1_wr_en_24 = APP_decodin_wr_en & ~shift_24[`HijWidth-1];
 		APP_G1_wr_en_25 = APP_decodin_wr_en & ~shift_25[`HijWidth-1];
+		APP_G1_wr_en_26 = APP_decodin_wr_en & share_flag;
 	end
 	else
 	begin
@@ -1075,6 +1095,7 @@ begin
 		APP_G1_wr_en_23 = 0;
 		APP_G1_wr_en_24 = 0;
 		APP_G1_wr_en_25 = 0;
+		APP_G1_wr_en_26 = 0;
 	end
 end
 
@@ -1110,6 +1131,7 @@ begin
 		APP_G0_addr_wr_23 = APPmsg_ini_addr_D0_C23;
 		APP_G0_addr_wr_24 = APPmsg_ini_addr_D0_C24;
 		APP_G0_addr_wr_25 = APPmsg_ini_addr_D0_C25;
+		APP_G0_addr_wr_26 = APPmsg_ini_addr_D0_C26;
 	end
 	else
 	begin                                      //更新时，从第一行为1的列开始写
@@ -1139,6 +1161,7 @@ begin
 		APP_G0_addr_wr_23 = APP_addr_wr_23;
 		APP_G0_addr_wr_24 = APP_addr_wr_24;
 		APP_G0_addr_wr_25 = APP_addr_wr_25;
+		APP_G0_addr_wr_26 = APP_addr_wr_26;
 	end
 end
 // write address of APPRam G1
@@ -1172,6 +1195,7 @@ begin
 		APP_G1_addr_wr_23 = APPmsg_ini_addr_D0_C23;
 		APP_G1_addr_wr_24 = APPmsg_ini_addr_D0_C24;
 		APP_G1_addr_wr_25 = APPmsg_ini_addr_D0_C25;
+		APP_G1_addr_wr_26 = APPmsg_ini_addr_D0_C26;
 	end
 	else
 	begin
@@ -1201,11 +1225,26 @@ begin
 		APP_G1_addr_wr_23 = APP_addr_wr_23;
 		APP_G1_addr_wr_24 = APP_addr_wr_24;
 		APP_G1_addr_wr_25 = APP_addr_wr_25;
+		APP_G1_addr_wr_26 = APP_addr_wr_26;
 	end
 end
 
 // write data of APPRam G0
 // during initializing, all APPRams' write data is generated by get_msgini (except the 1st 2 Rams)
+assign APPmsg_ini_data_subx_7_or_APPmsg_ini_data_subx_all = (APPmsg_ini_sub_x == 2d'3) ? APPmsg_ini_data_subx_all:APPmsg_ini_data_subx_7;
+wire [2:0] mod8;
+
+assign mod8 = (group_to_buffer == 0) ? (APP_G0_addr_wr_26 - 15) % 8 : (APP_G1_addr_wr_26 - 15) % 8;
+
+assign APPmsg_ini_data_subx_all =   (mod8 == 3'd0) ? APPmsg_ini_data_subx_0 : //对8取余，就是第三位
+									(mod8 == 3'd1) ? APPmsg_ini_data_subx_1 :
+									(mod8 == 3'd2) ? APPmsg_ini_data_subx_2 :
+									(mod8 == 3'd3) ? APPmsg_ini_data_subx_3 :
+									(mod8 == 3'd4) ? APPmsg_ini_data_subx_4 :
+									(mod8 == 3'd5) ? APPmsg_ini_data_subx_5 :
+									(mod8 == 3'd6) ? APPmsg_ini_data_subx_6 : APPmsg_ini_data_subx_7;
+
+
 always @(*) //写入接口 APP
 begin
 	if(buffer_valid_D0 && group_to_buffer == 0) //写入buffer时
@@ -1218,24 +1257,27 @@ begin
 		APPmsg_G0_in_5 = APPmsg_ini_data_subx_3;
 		APPmsg_G0_in_6 = APPmsg_ini_data_subx_4;
 		APPmsg_G0_in_7 = APPmsg_ini_data_subx_5;
-		APPmsg_G0_in_8 = APPmsg_ini_data_subx_0;
-		APPmsg_G0_in_9 = APPmsg_ini_data_subx_1;
-		APPmsg_G0_in_10 = APPmsg_ini_data_subx_2;
-		APPmsg_G0_in_11 = APPmsg_ini_data_subx_3;
-		APPmsg_G0_in_12 = APPmsg_ini_data_subx_4;
-		APPmsg_G0_in_13 = APPmsg_ini_data_subx_5;
-		APPmsg_G0_in_14 = APPmsg_ini_data_subx_0;
-		APPmsg_G0_in_15 = APPmsg_ini_data_subx_1;
-		APPmsg_G0_in_16 = APPmsg_ini_data_subx_2;
-		APPmsg_G0_in_17 = APPmsg_ini_data_subx_3;
-		APPmsg_G0_in_18 = APPmsg_ini_data_subx_4;
-		APPmsg_G0_in_19 = APPmsg_ini_data_subx_5;
-		APPmsg_G0_in_20 = APPmsg_ini_data_subx_0;
-		APPmsg_G0_in_21 = APPmsg_ini_data_subx_1;
-		APPmsg_G0_in_22 = APPmsg_ini_data_subx_2;
-		APPmsg_G0_in_23 = APPmsg_ini_data_subx_3;
-		APPmsg_G0_in_24 = APPmsg_ini_data_subx_4;
-		APPmsg_G0_in_25 = APPmsg_ini_data_subx_5;
+		APPmsg_G0_in_8 = APPmsg_ini_data_subx_6;
+		APPmsg_G0_in_9 = APPmsg_ini_data_subx_7;
+
+		APPmsg_G0_in_10 = APPmsg_ini_data_subx_0;
+		APPmsg_G0_in_11 = APPmsg_ini_data_subx_1;
+		APPmsg_G0_in_12 = APPmsg_ini_data_subx_2;
+		APPmsg_G0_in_13 = APPmsg_ini_data_subx_3;
+		APPmsg_G0_in_14 = APPmsg_ini_data_subx_4;
+		APPmsg_G0_in_15 = APPmsg_ini_data_subx_5;
+		APPmsg_G0_in_16 = APPmsg_ini_data_subx_6;
+		APPmsg_G0_in_17 = APPmsg_ini_data_subx_7;
+
+		APPmsg_G0_in_18 = APPmsg_ini_data_subx_0;
+		APPmsg_G0_in_19 = APPmsg_ini_data_subx_1;
+		APPmsg_G0_in_20 = APPmsg_ini_data_subx_2;
+		APPmsg_G0_in_21 = {`inNum{6'd31}};  //置为大LLR
+		APPmsg_G0_in_22 = APPmsg_ini_data_subx_3;
+		APPmsg_G0_in_23 = APPmsg_ini_data_subx_4;
+		APPmsg_G0_in_24 = APPmsg_ini_data_subx_5;
+		APPmsg_G0_in_25 = APPmsg_ini_data_subx_6;
+		APPmsg_G0_in_26 = APPmsg_ini_data_subx_7_or_APPmsg_ini_data_subx_all; 
 	end
 	else             //更新buffer时
 	begin 
@@ -1265,6 +1307,7 @@ begin
 		APPmsg_G0_in_23 = APPmsg_new_23;
 		APPmsg_G0_in_24 = APPmsg_new_24;
 		APPmsg_G0_in_25 = APPmsg_new_25;
+		APPmsg_G0_in_26 = APPmsg_new_26;
 	end
 end
 // write data of APPRam G1
@@ -1280,24 +1323,27 @@ begin
 		APPmsg_G1_in_5 = APPmsg_ini_data_subx_3;
 		APPmsg_G1_in_6 = APPmsg_ini_data_subx_4;
 		APPmsg_G1_in_7 = APPmsg_ini_data_subx_5;
-		APPmsg_G1_in_8 = APPmsg_ini_data_subx_0;
-		APPmsg_G1_in_9 = APPmsg_ini_data_subx_1;
-		APPmsg_G1_in_10 = APPmsg_ini_data_subx_2;
-		APPmsg_G1_in_11 = APPmsg_ini_data_subx_3;
-		APPmsg_G1_in_12 = APPmsg_ini_data_subx_4;
-		APPmsg_G1_in_13 = APPmsg_ini_data_subx_5;
-		APPmsg_G1_in_14 = APPmsg_ini_data_subx_0;
-		APPmsg_G1_in_15 = APPmsg_ini_data_subx_1;
-		APPmsg_G1_in_16 = APPmsg_ini_data_subx_2;
-		APPmsg_G1_in_17 = APPmsg_ini_data_subx_3;
-		APPmsg_G1_in_18 = APPmsg_ini_data_subx_4;
-		APPmsg_G1_in_19 = APPmsg_ini_data_subx_5;
-		APPmsg_G1_in_20 = APPmsg_ini_data_subx_0;
-		APPmsg_G1_in_21 = APPmsg_ini_data_subx_1;
-		APPmsg_G1_in_22 = APPmsg_ini_data_subx_2;
-		APPmsg_G1_in_23 = APPmsg_ini_data_subx_3;
-		APPmsg_G1_in_24 = APPmsg_ini_data_subx_4;
-		APPmsg_G1_in_25 = APPmsg_ini_data_subx_5;
+		APPmsg_G1_in_8 = APPmsg_ini_data_subx_6;
+		APPmsg_G1_in_9 = APPmsg_ini_data_subx_7;
+
+		APPmsg_G1_in_10 = APPmsg_ini_data_subx_0;
+		APPmsg_G1_in_11 = APPmsg_ini_data_subx_1;
+		APPmsg_G1_in_12 = APPmsg_ini_data_subx_2;
+		APPmsg_G1_in_13 = APPmsg_ini_data_subx_3;
+		APPmsg_G1_in_14 = APPmsg_ini_data_subx_4;
+		APPmsg_G1_in_15 = APPmsg_ini_data_subx_5;
+		APPmsg_G1_in_16 = APPmsg_ini_data_subx_6;
+		APPmsg_G1_in_17 = APPmsg_ini_data_subx_7;
+
+		APPmsg_G1_in_18 = APPmsg_ini_data_subx_0;
+		APPmsg_G1_in_19 = APPmsg_ini_data_subx_1;
+		APPmsg_G1_in_20 = APPmsg_ini_data_subx_2;
+		APPmsg_G1_in_21 =  {`inNum{6'd31}}; 
+		APPmsg_G1_in_22 = APPmsg_ini_data_subx_3;
+		APPmsg_G1_in_23 = APPmsg_ini_data_subx_4;
+		APPmsg_G1_in_24 = APPmsg_ini_data_subx_5;
+		APPmsg_G1_in_25 = APPmsg_ini_data_subx_6;
+		APPmsg_G1_in_26 = APPmsg_ini_data_subx_7_or_APPmsg_ini_data_subx_all;
 	end
 	else
 	begin
@@ -1327,6 +1373,7 @@ begin
 		APPmsg_G1_in_23 = APPmsg_new_23;
 		APPmsg_G1_in_24 = APPmsg_new_24;
 		APPmsg_G1_in_25 = APPmsg_new_25;
+		APPmsg_G1_in_26 = APPmsg_new_26;
 	end
 end
 
@@ -1837,6 +1884,7 @@ begin
 		APPmsg_ini_addr_D0_C23 <= 0;
 		APPmsg_ini_addr_D0_C24 <= 0;
 		APPmsg_ini_addr_D0_C25 <= 0;
+		APPmsg_ini_addr_D0_C26 <= 0;
 	end
 	else
 	begin
@@ -1866,6 +1914,7 @@ begin
 		APPmsg_ini_addr_D0_C23 <= APPmsg_ini_addr;
 		APPmsg_ini_addr_D0_C24 <= APPmsg_ini_addr;
 		APPmsg_ini_addr_D0_C25 <= APPmsg_ini_addr;
+		APPmsg_ini_addr_D0_C26 <= APPmsg_ini_addr_26;
 	end
 end
 
@@ -1887,6 +1936,27 @@ begin
 		APPmsg_ini_addr <= 0;
 	end
 end
+
+always @(posedge clk or negedge rst_n) //初始送入APP 信号 地址计数
+begin
+	if(!rst_n)
+	begin
+		APPmsg_ini_addr_26 <= 0;
+	end
+	else if(buffer_valid && (APPmsg_ini_sub_x == 2d'3 || APPmsg_ini_sub_x = 2d'2))
+	begin
+		if(APPmsg_ini_addr_26 == 8d'143) //+16*9 -1
+			APPmsg_ini_addr_26 <= 0;
+		else
+			APPmsg_ini_addr_26 <= APPmsg_ini_addr_26 + 1'b1;
+	end
+	else
+	begin
+		APPmsg_ini_addr_26 <= 0;
+	end
+end
+
+
 always @(posedge clk or negedge rst_n) //目前没用到
 begin
 	if(!rst_n)
@@ -1979,6 +2049,24 @@ get_msgini u5_get_msgini(
 	.addr_in(APPmsg_ini_addr),
 	.en_in(buffer_valid),
 	.data_out(APPmsg_ini_data_subx_5)
+);
+
+get_msgini u6_get_msgini(
+	.clk(clk),
+	.rst_n(rst_n),
+	.data_in(APPmsg_ini_subx_6),
+	.addr_in(APPmsg_ini_addr),
+	.en_in(buffer_valid),
+	.data_out(APPmsg_ini_data_subx_6)
+);
+
+get_msgini u7_get_msgini(
+	.clk(clk),
+	.rst_n(rst_n),
+	.data_in(APPmsg_ini_subx_7),
+	.addr_in(APPmsg_ini_addr),
+	.en_in(buffer_valid),
+	.data_out(APPmsg_ini_data_subx_7)
 );
 
 
@@ -3435,6 +3523,17 @@ always@(posedge clk or negedge rst_n)begin
 		share_rd_flag <= share_rd_flag;
 end
 
+always@(posedge clk or negedge rst_n)begin
+	if(!rst_n)begin
+		APP_addr_wr_26  <= 0;
+	end
+	else if(decode_start)begin
+		APP_addr_wr_26  <= 0;
+	end
+	else if(APP_decodin_wr_en && share_flag)begin
+		APP_addr_wr_26  <= APP_addr_wr_26+1;
+	end
+end
 
 //c_reg 
 always@(posedge clk or negedge rst_n)begin
@@ -4046,6 +4145,8 @@ APPmemory_0 u22_G0_APPmemory(.clka(clk),  .ena(APP_G0_wr_en_22), .wea(1'b1), .ad
 APPmemory_0 u23_G0_APPmemory(.clka(clk),  .ena(APP_G0_wr_en_23), .wea(1'b1), .addra(APP_G0_addr_wr_23), .dina(APPmsg_G0_in_23), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_23), .doutb(APPmsg_G0_out_23));
 APPmemory_0 u24_G0_APPmemory(.clka(clk),  .ena(APP_G0_wr_en_24), .wea(1'b1), .addra(APP_G0_addr_wr_24), .dina(APPmsg_G0_in_24), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_24), .doutb(APPmsg_G0_out_24));
 APPmemory_0 u25_G0_APPmemory(.clka(clk),  .ena(APP_G0_wr_en_25), .wea(1'b1), .addra(APP_G0_addr_wr_25), .dina(APPmsg_G0_in_25), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_25), .doutb(APPmsg_G0_out_25));
+shareAPPmemory shared_G0_APPmemory(.clka(clk),.ena(APP_G0_wr_en_26), .wea(1'b1), .addra(APP_G0_addr_wr_26), .dina(APPmsg_G0_in_26), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_26), .doutb(APPmsg_old_26));
+
 // APPRam Group 1
 APPmemory_0  u0_G1_APPmemory(.clka(clk),   .ena(APP_G1_wr_en_0 ), .wea(1'b1), .addra(APP_G1_addr_wr_0 ), .dina(APPmsg_G1_in_0 ), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_0 ), .doutb(APPmsg_G1_out_0 ));
 APPmemory_0  u1_G1_APPmemory(.clka(clk),   .ena(APP_G1_wr_en_1 ), .wea(1'b1), .addra(APP_G1_addr_wr_1 ), .dina(APPmsg_G1_in_1 ), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_1 ), .doutb(APPmsg_G1_out_1 ));
@@ -4073,6 +4174,7 @@ APPmemory_0 u22_G1_APPmemory(.clka(clk),  .ena(APP_G1_wr_en_22), .wea(1'b1), .ad
 APPmemory_0 u23_G1_APPmemory(.clka(clk),  .ena(APP_G1_wr_en_23), .wea(1'b1), .addra(APP_G1_addr_wr_23), .dina(APPmsg_G1_in_23), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_23), .doutb(APPmsg_G1_out_23));
 APPmemory_0 u24_G1_APPmemory(.clka(clk),  .ena(APP_G1_wr_en_24), .wea(1'b1), .addra(APP_G1_addr_wr_24), .dina(APPmsg_G1_in_24), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_24), .doutb(APPmsg_G1_out_24));
 APPmemory_0 u25_G1_APPmemory(.clka(clk),  .ena(APP_G1_wr_en_25), .wea(1'b1), .addra(APP_G1_addr_wr_25), .dina(APPmsg_G1_in_25), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_25), .doutb(APPmsg_G1_out_25));
+shareAPPmemory shared_G1_APPmemory(.clka(clk),.ena(APP_G1_wr_en_26), .wea(1'b1), .addra(APP_G1_addr_wr_26), .dina(APPmsg_G1_in_26), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_26), .doutb(APPmsg_old_26));
 
 always@(posedge clk or negedge rst_n) begin
 	if(!rst_n)begin
