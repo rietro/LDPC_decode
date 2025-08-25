@@ -19,40 +19,6 @@
 `include "Decoder_Parameters.v"
 `include "Top_Parameters.v"
 
-/* =============================================================================
- * LDPC_Dec — 带完整中文注释的结构化骨架（自动生成）
- * -----------------------------------------------------------------------------
- * 本文件在原始 `LDPC_decode.v` 基础上，补充了详细的中文注释与分区标题，帮助阅读与二次开发。
- * 主要说明：
- *   1) 顶层接口保持不变，可直接综合/仿真（注释不会改变功能）。
- *   2) 为关键 always 块、状态机、双缓冲 APPRam、计算链路(QSN/DPU/GN/CTV) 加入结构化注释。
- *   3) 在“TODO”位置补入了更清晰的意图说明，标明时序/组合/子模块职责与数据流。
- *
- * 顶层数据流（概览）：
- *   APP 输入分片  ->  双缓冲 APPRam(G0/G1) 装载(buffer)  ->  HROM 位移/拓扑
- *     -> QSN(校验节点) -> DPU(层/行处理) -> GN(变量节点回写/LLR更新) -> CTV(中间软信息)
- *     -> APPRam 对应组写回  ->  迭代/分层推进  ->  APPmsg_decode_out 输出
- *
- * 双缓冲时序：
- *   - BUFFER：将新一帧 APP LLR 写入待用的 APPRam 组（G0 或 G1）。
- *   - DECODE：另一组在被译码；FULL：一边 BUFFER，一边 DECODE；WAIT：BUFFER 已满等待 DECODE 结束。
- *   - `group_to_buffer` / `group_to_decode` 在 buffer_end / decode_end 的下一个周期翻转以交替使用。
- *
- * 关键握手机制：
- *   - 输入侧：buffer_valid/buffer_start/buffer_last 与 buffer_ready。
- *   - 译码侧：decode_start 由状态机条件触发；decode_valid 拉高一个周期表示完成一次输出，decode_end 紧随其后。
- *   - 重要延迟：buffer_end 为 buffer_last 延后一拍；decode_end 为 decode_valid 延后一拍。
- *
- * 阅读指引（找到你想看的部分）：
- *   [FSM 状态与切换]        搜索关键词：state_cur/state_next、IDLE/BUFFER/DECODE/FULL/WAIT
- *   [双缓冲写入逻辑]        搜索关键词：APP_G0_wr_en_*/APP_G1_wr_en_*、group_to_buffer、APPmsg_ini_sub_x
- *   [译码写回逻辑]          搜索关键词：APP_decodin_wr_en、shift_*、group_to_decode
- *   [地址生成与界限]        搜索关键词：APP_addr_*、*_max、*_ini_*
- *   [QSN/DPU/GN/CTV 数据]   搜索关键词：QSN / DPU / GN / CTV、*_APPmsg_*、CTV_* / APP_CTV_*
- *
- * 生成时间：自动注释增强（ChatGPT, 2025-08-17, Asia/Tokyo）
- * =============================================================================
- */
 // -----------------------------------------------------------------------------
  // 顶层模块接口说明（端口一览）
  //   clk, rst_n               ：时钟与低有效复位
@@ -232,7 +198,7 @@ wire [`DPUctvdata_Len-1:0]CTV_new_0,CTV_new_1,CTV_new_2,CTV_new_3,CTV_new_4,CTV_
                   CTV_new_20,CTV_new_21,CTV_new_22,CTV_new_23,CTV_new_24,CTV_new_25,CTV_new_26,CTV_new_27,CTV_new_28,CTV_new_29,CTV_new_30,CTV_new_31;  
 
 // =============================================================================
- // DPU — 层级/行级计算核心
+ // DPU - 层级/行级计算核心
  // - DPU_APPmsg_* / signAPP_*：对 APP/QSN 的聚合与符号决策；
  // - flag：对 P 个并行通道的使能标志；
  // =============================================================================
@@ -347,7 +313,7 @@ reg APP_addr_rd_end_D0,APP_addr_rd_end_D1;
  // - 时序要点：Buffer 与 Decode 互不干扰（FULL 态并行进行，不同组）。
  // =============================================================================
 // =============================================================================
- // APPRam G0 — 写使能选择
+ // APPRam G0 - 写使能选择
  // - Buffer 阶段：根据 APPmsg_ini_sub_x_D0 选择 6 连续实例（0..7/8..13/14..19/20..25）；
  // - Decode 阶段：由 APP_decodin_wr_en 与 `~shift_*[HijWidth-1]` 决定是否写回；
  // - 非当前阶段或非当前组：全部 0。
@@ -468,7 +434,7 @@ begin
 end
 
 // -----------------------------------------------------------------------------
- // buffer_end —— 输入缓冲结束脉冲（与 buffer_last 对应）
+ // buffer_end -- 输入缓冲结束脉冲（与 buffer_last 对应）
  // 规则：在 buffer_last 的下一个时钟周期拉高 1 拍，用于：
  //   1) 驱动 FSM 从 BUFFER 进入 DECODE/FULL；
  //   2) 触发 group_to_buffer 翻转，切换下次写入的 APPRam 组。
@@ -482,7 +448,7 @@ begin
 end
 
 // -----------------------------------------------------------------------------
- // decode_end —— 译码结束脉冲（与 decode_valid 对应）
+ // decode_end -- 译码结束脉冲（与 decode_valid 对应）
  // 规则：在 decode_valid 的下一个时钟周期拉高 1 拍，用于：
  //   1) 驱动 FSM 退出 DECODE；在 FULL/WAIT 中与 buffer_end 共同决定下一状态；
  //   2) 触发 group_to_decode 翻转，切换下次译码的 APPRam 组。
@@ -496,7 +462,7 @@ begin
 end
 
 // -----------------------------------------------------------------------------
- // buffer_ready —— 输入侧就绪信号
+ // buffer_ready -- 输入侧就绪信号
  // 实际行为：在 IDLE / BUFFER / DECODE 保持为 1；
  //   * FULL：当 buffer_end 到达且 decode 仍在进行时拉低为 0，防止再继续写入；
  //   * WAIT：译码未结束为 0，译码结束后恢复为 1。
@@ -704,15 +670,15 @@ end
 
 
 // =============================================================================
- // Buffer 阶段 — 组合逻辑（写使能选择）
+ // Buffer 阶段 - 组合逻辑（写使能选择）
  // - 依据 group_to_buffer 选择 G0 或 G1；
  // - 依据 APPmsg_ini_sub_x_D0 将 26 个 APPRam 按 (0..7)(8..13)(14..19)(20..25) 分 4 组，
  //   每次只打开 6 个连续实例的 wr_en；
- // - 初始化首组时会处理“首组 8 个”的对齐细节（由原始代码逻辑控制）。
+ // - 初始化首组时会处理"首组 8 个"的对齐细节（由原始代码逻辑控制）。
  // =============================================================================
 
 // =============================================================================
- // APPRam G0 — 写使能选择
+ // APPRam G0 - 写使能选择
  // - Buffer 阶段：根据 APPmsg_ini_sub_x_D0 选择 6 连续实例（0..7/8..13/14..19/20..25）；
  // - Decode 阶段：由 APP_decodin_wr_en 与 `~shift_*[HijWidth-1]` 决定是否写回；
  // - 非当前阶段或非当前组：全部 0。
@@ -907,7 +873,7 @@ begin
 	end
 end
 // =============================================================================
- // APPRam G1 — 写使能选择
+ // APPRam G1 - 写使能选择
  // 逻辑同 G0，但使用 group_to_buffer==1 或 group_to_decode==1 的条件。
  // =============================================================================
 always @(*) //控制信号往哪一个RAM写入，针对第二个buffer
@@ -1101,7 +1067,7 @@ end
 
 // write address of APPRam G0
 // during initializing, all APPRams' write address is APPmsg_ini_addr
-always @(*)
+always @(*) //组合逻辑，没有延迟
 begin
 	if(buffer_valid_D0 && group_to_buffer == 0)  //刚开始写入，从0到 APPmsg_addr_max
 	begin
@@ -1131,7 +1097,7 @@ begin
 		APP_G0_addr_wr_23 = APPmsg_ini_addr_D0_C23;
 		APP_G0_addr_wr_24 = APPmsg_ini_addr_D0_C24;
 		APP_G0_addr_wr_25 = APPmsg_ini_addr_D0_C25;
-		APP_G0_addr_wr_26 = APPmsg_ini_addr_D0_C26;
+		APP_G0_addr_wr_26 = APPmsg_ini_addr_D0_C26_all;
 	end
 	else
 	begin                                      //更新时，从第一行为1的列开始写
@@ -1195,7 +1161,7 @@ begin
 		APP_G1_addr_wr_23 = APPmsg_ini_addr_D0_C23;
 		APP_G1_addr_wr_24 = APPmsg_ini_addr_D0_C24;
 		APP_G1_addr_wr_25 = APPmsg_ini_addr_D0_C25;
-		APP_G1_addr_wr_26 = APPmsg_ini_addr_D0_C26;
+		APP_G1_addr_wr_26 = APPmsg_ini_addr_D0_C26_all;
 	end
 	else
 	begin
@@ -1231,10 +1197,12 @@ end
 
 // write data of APPRam G0
 // during initializing, all APPRams' write data is generated by get_msgini (except the 1st 2 Rams)
-assign APPmsg_ini_data_subx_7_or_APPmsg_ini_data_subx_all = (APPmsg_ini_sub_x == 2d'3) ? APPmsg_ini_data_subx_all:APPmsg_ini_data_subx_7;
+assign APPmsg_ini_data_subx_7_or_APPmsg_ini_data_subx_all = (APPmsg_ini_sub_x_D0 == 2'd3) ? APPmsg_ini_data_subx_all:APPmsg_ini_data_subx_7;
 wire [2:0] mod8;
 
-assign mod8 = (group_to_buffer == 0) ? (APP_G0_addr_wr_26 - 15) % 8 : (APP_G1_addr_wr_26 - 15) % 8;
+assign mod8 = (group_to_buffer == 0) ? 
+              ((APPmsg_ini_sub_x_D0 == 2'd3) ? ((APPmsg_ini_addr_D0_C26 - 16) % 8) : 0) :
+              ((APPmsg_ini_sub_x_D0 == 2'd3) ? ((APPmsg_ini_addr_D0_C26 - 16) % 8) : 0);
 
 assign APPmsg_ini_data_subx_all =   (mod8 == 3'd0) ? APPmsg_ini_data_subx_0 : //对8取余，就是第三位
 									(mod8 == 3'd1) ? APPmsg_ini_data_subx_1 :
@@ -1243,6 +1211,8 @@ assign APPmsg_ini_data_subx_all =   (mod8 == 3'd0) ? APPmsg_ini_data_subx_0 : //
 									(mod8 == 3'd4) ? APPmsg_ini_data_subx_4 :
 									(mod8 == 3'd5) ? APPmsg_ini_data_subx_5 :
 									(mod8 == 3'd6) ? APPmsg_ini_data_subx_6 : APPmsg_ini_data_subx_7;
+
+wire [7:0] APPmsg_ini_addr_D0_C26_all = (APPmsg_ini_sub_x_D0 == 2'd3) ? 16 + (APPmsg_ini_addr_D0_C26 - 8'd16)/8 + ((APPmsg_ini_addr_D0_C26 - 8'd16) % 8) * 16 : APPmsg_ini_addr_D0_C26; //在输入第四段时+8加，在输入第三段时+1加
 
 
 always @(*) //写入接口 APP
@@ -1378,7 +1348,7 @@ begin
 end
 
 // =============================================================================
- // Buffer 阶段 — 时序逻辑（地址/有效同步）
+ // Buffer 阶段 - 时序逻辑（地址/有效同步）
  // - 输入握手：buffer_valid / buffer_start / buffer_last 同步到 D0；
  // - 地址自增：APPmsg_ini_addr / APP_wr_en_cnt；
  // - 结束标志：buffer_end 在 buffer_last 后 1 拍拉高，用于翻转 group_to_buffer 并触发 DECODE。
@@ -1918,23 +1888,59 @@ begin
 	end
 end
 
-always @(posedge clk or negedge rst_n) //初始送入APP 信号 地址计数
+// always @(posedge clk or negedge rst_n) //初始送入APP 信号 地址计数
+// begin
+// 	if(!rst_n)
+// 	begin
+// 		APPmsg_ini_addr <= 0;
+// 	end
+// 	else if(buffer_valid)
+// 	begin
+// 		if(APPmsg_ini_addr == APP_addr_rd_max)
+// 			APPmsg_ini_addr <= 0;
+// 		else
+// 			APPmsg_ini_addr <= APPmsg_ini_addr + 1'b1;
+// 	end
+// 	else
+// 	begin
+// 		APPmsg_ini_addr <= 0;
+// 	end
+// end
+
+reg [2:0] eight_clk_cnt; // 用于八拍计数
+always @(posedge clk or negedge rst_n) 
 begin
-	if(!rst_n)
-	begin
-		APPmsg_ini_addr <= 0;
-	end
-	else if(buffer_valid)
-	begin
-		if(APPmsg_ini_addr == APP_addr_rd_max)
-			APPmsg_ini_addr <= 0;
-		else
-			APPmsg_ini_addr <= APPmsg_ini_addr + 1'b1;
-	end
-	else
-	begin
-		APPmsg_ini_addr <= 0;
-	end
+    if (!rst_n) begin
+        APPmsg_ini_addr <= 0;
+        eight_clk_cnt <= 0;
+    end
+    else if (buffer_valid) begin
+        if (APPmsg_ini_sub_x == 3) begin
+            // 八拍计数逻辑
+            if (eight_clk_cnt == 7) begin
+                eight_clk_cnt <= 0;
+                if (APPmsg_ini_addr == APP_addr_rd_max)
+                    APPmsg_ini_addr <= 0;
+                else
+                    APPmsg_ini_addr <= APPmsg_ini_addr + 1'b1;
+            end
+            else begin
+                eight_clk_cnt <= eight_clk_cnt + 1'b1;
+            end
+        end
+        else begin
+            // 正常每拍加一
+            eight_clk_cnt <= 0; // 重置八拍计数器
+            if (APPmsg_ini_addr == APP_addr_rd_max)
+                APPmsg_ini_addr <= 0;
+            else
+                APPmsg_ini_addr <= APPmsg_ini_addr + 1'b1;
+        end
+    end
+    else begin
+        APPmsg_ini_addr <= 0;
+        eight_clk_cnt <= 0;
+    end
 end
 
 always @(posedge clk or negedge rst_n) //初始送入APP 信号 地址计数
@@ -1943,9 +1949,9 @@ begin
 	begin
 		APPmsg_ini_addr_26 <= 0;
 	end
-	else if(buffer_valid && (APPmsg_ini_sub_x == 2d'3 || APPmsg_ini_sub_x = 2d'2))
+	else if(buffer_valid && (APPmsg_ini_sub_x == 2'd3 || APPmsg_ini_sub_x == 2'd2))
 	begin
-		if(APPmsg_ini_addr_26 == 8d'143) //+16*9 -1
+		if(APPmsg_ini_addr_26 == 8'd143) //+16*9 -1
 			APPmsg_ini_addr_26 <= 0;
 		else
 			APPmsg_ini_addr_26 <= APPmsg_ini_addr_26 + 1'b1;
@@ -2071,7 +2077,7 @@ get_msgini u7_get_msgini(
 
 
 // =============================================================================
- // Decode 阶段 — 组合逻辑（数据路径）
+ // Decode 阶段 - 组合逻辑（数据路径）
  // - HROM：给出每层每行的移位/拓扑 `shift_*`（最高位为屏蔽标志，低位为循环移位量）；
  // - QSN：计算校验节点消息（c_reg_* / c_*）；
  // - DPU：按层聚合与阈值/和/最小值等运算（DN_APPmsg_* / DPU_APPmsg_* / signAPP_*）；
@@ -2111,7 +2117,7 @@ assign APPmsg_decode_out = {APP_dec_out_21,APP_dec_out_20,APP_dec_out_19,APP_dec
 // assign APPmsg_decode_out = {~APP_dec_out_21,~APP_dec_out_20,~APP_dec_out_19,~APP_dec_out_18,~APP_dec_out_17,~APP_dec_out_16,~APP_dec_out_15,~APP_dec_out_14,~APP_dec_out_13,~APP_dec_out_12,~APP_dec_out_11,~APP_dec_out_10,~APP_dec_out_9,~APP_dec_out_8,~APP_dec_out_7,~APP_dec_out_6,~APP_dec_out_5,~APP_dec_out_4,~APP_dec_out_3,~APP_dec_out_2,~APP_dec_out_1,~APP_dec_out_0};
 
 // =============================================================================
- // Decode 阶段 — 时序逻辑（推进与结束）
+ // Decode 阶段 - 时序逻辑（推进与结束）
  // - iter_start/iter_end：迭代粒度控制（基于 Layernum/totalLayernum）；
  // - update_start/update_end：层粒度控制（基于 HROM 输出的每层行数/移位）；
  // - APP_addr_rd_end：一次 APP 遍历完成；
@@ -5386,7 +5392,7 @@ CTVmemory u31_CTVmeory(.clka(clk), .ena(CTV_wr_en), .wea(1'b1), .addra(CTV_addr_
 
 
 // =============================================================================
- // DPU — 层级/行级计算核心
+ // DPU - 层级/行级计算核心
  // - DPU_APPmsg_* / signAPP_*：对 APP/QSN 的聚合与符号决策；
  // - flag：对 P 个并行通道的使能标志；
  // =============================================================================
