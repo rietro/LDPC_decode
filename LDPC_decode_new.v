@@ -125,7 +125,7 @@ wire [`APP_addr_width-2:0]  APP_addr_rd_ini_0,APP_addr_rd_ini_1,APP_addr_rd_ini_
            APP_addr_rd_ini_20,APP_addr_rd_ini_21,APP_addr_rd_ini_22,APP_addr_rd_ini_23,APP_addr_rd_ini_24,APP_addr_rd_ini_25,APP_addr_rd_ini_26;	
 reg [`APP_addr_width-2:0]  APP_addr_rd_0,APP_addr_rd_1,APP_addr_rd_2,APP_addr_rd_3,APP_addr_rd_4,APP_addr_rd_5,APP_addr_rd_6,APP_addr_rd_7,APP_addr_rd_8,APP_addr_rd_9,APP_addr_rd_10,APP_addr_rd_11,APP_addr_rd_12,APP_addr_rd_13,APP_addr_rd_14,APP_addr_rd_15,APP_addr_rd_16,APP_addr_rd_17,APP_addr_rd_18,APP_addr_rd_19,APP_addr_rd_20,APP_addr_rd_21,APP_addr_rd_22,APP_addr_rd_23,APP_addr_rd_24,APP_addr_rd_25;
 reg [7:0]  APP_addr_rd_26;
-
+wire [7:0] APPmsg_ini_addr_D0_C26_all ;
 reg [`APP_addr_width-2:0] APP_wr_en_cnt;
 reg [`APP_addr_width-2:0]  APP_addr_wr_0,APP_addr_wr_1,APP_addr_wr_2,APP_addr_wr_3,APP_addr_wr_4,APP_addr_wr_5,APP_addr_wr_6,APP_addr_wr_7,APP_addr_wr_8,APP_addr_wr_9,APP_addr_wr_10,APP_addr_wr_11,APP_addr_wr_12,APP_addr_wr_13,APP_addr_wr_14,APP_addr_wr_15,APP_addr_wr_16,APP_addr_wr_17,APP_addr_wr_18,APP_addr_wr_19,APP_addr_wr_20,APP_addr_wr_21,APP_addr_wr_22,APP_addr_wr_23,APP_addr_wr_24,APP_addr_wr_25;
 reg [7:0] APP_addr_wr_26;
@@ -1067,7 +1067,7 @@ end
 
 // write address of APPRam G0
 // during initializing, all APPRams' write address is APPmsg_ini_addr
-always @(*) //组合逻辑，没有延迟
+always @(*)
 begin
 	if(buffer_valid_D0 && group_to_buffer == 0)  //刚开始写入，从0到 APPmsg_addr_max
 	begin
@@ -1212,8 +1212,8 @@ assign APPmsg_ini_data_subx_all =   (mod8 == 3'd0) ? APPmsg_ini_data_subx_0 : //
 									(mod8 == 3'd5) ? APPmsg_ini_data_subx_5 :
 									(mod8 == 3'd6) ? APPmsg_ini_data_subx_6 : APPmsg_ini_data_subx_7;
 
-wire [7:0] APPmsg_ini_addr_D0_C26_all = (APPmsg_ini_sub_x_D0 == 2'd3) ? 16 + (APPmsg_ini_addr_D0_C26 - 8'd16)/8 + ((APPmsg_ini_addr_D0_C26 - 8'd16) % 8) * 16 : APPmsg_ini_addr_D0_C26; //在输入第四段时+8加，在输入第三段时+1加
 
+assign APPmsg_ini_addr_D0_C26_all = (APPmsg_ini_sub_x_D0 == 2'd3) ? 16 + (APPmsg_ini_addr_D0_C26 - 8'd16)/8 + ((APPmsg_ini_addr_D0_C26 - 8'd16) % 8) * 16 : APPmsg_ini_addr_D0_C26; //在输入第四段时+8加，在输入第三段时+1加
 
 always @(*) //写入接口 APP
 begin
