@@ -160,7 +160,8 @@ wire [`APPdata_Len-1:0] APPmsg_old_26;
 reg [`APPdata_Len-1:0] APPmsg_old_26_D0,APPmsg_old_26_D1;				  
 wire [`APPdata_Len-1:0] APPmsg_new_0,APPmsg_new_1,APPmsg_new_2,APPmsg_new_3,APPmsg_new_4,APPmsg_new_5,APPmsg_new_6,APPmsg_new_7,APPmsg_new_8,APPmsg_new_9,
                   APPmsg_new_10,APPmsg_new_11,APPmsg_new_12,APPmsg_new_13,APPmsg_new_14,APPmsg_new_15,APPmsg_new_16,APPmsg_new_17,APPmsg_new_18,APPmsg_new_19,
-                  APPmsg_new_20,APPmsg_new_21,APPmsg_new_22,APPmsg_new_23,APPmsg_new_24,APPmsg_new_25,APPmsg_new_26;
+                  APPmsg_new_20,APPmsg_new_21,APPmsg_new_22,APPmsg_new_23,APPmsg_new_24,APPmsg_new_25;
+reg [`APPdata_Len-1:0] APPmsg_new_26;
 wire [`APPdata_Len-1:0] QSN_APPmsg_0,QSN_APPmsg_1,QSN_APPmsg_2,QSN_APPmsg_3,QSN_APPmsg_4,QSN_APPmsg_5,QSN_APPmsg_6,QSN_APPmsg_7,QSN_APPmsg_8,QSN_APPmsg_9,
                   QSN_APPmsg_10,QSN_APPmsg_11,QSN_APPmsg_12,QSN_APPmsg_13,QSN_APPmsg_14,QSN_APPmsg_15,QSN_APPmsg_16,QSN_APPmsg_17,QSN_APPmsg_18,QSN_APPmsg_19,
                   QSN_APPmsg_20,QSN_APPmsg_21,QSN_APPmsg_22,QSN_APPmsg_23,QSN_APPmsg_24,QSN_APPmsg_25;
@@ -263,7 +264,7 @@ reg decode_start;
 // index of the APPRam group to be used
 reg group_to_buffer;
 reg group_to_decode;
-reg group_to_decode_C0,group_to_decode_C1,group_to_decode_C2,group_to_decode_C3,group_to_decode_C4,group_to_decode_C5,group_to_decode_C6,group_to_decode_C7,group_to_decode_C8,group_to_decode_C9,group_to_decode_C10,group_to_decode_C11,group_to_decode_C12,group_to_decode_C13,group_to_decode_C14,group_to_decode_C15,group_to_decode_C16,group_to_decode_C17,group_to_decode_C18,group_to_decode_C19,group_to_decode_C20,group_to_decode_C21,group_to_decode_C22,group_to_decode_C23,group_to_decode_C24,group_to_decode_C25;
+reg group_to_decode_C0,group_to_decode_C1,group_to_decode_C2,group_to_decode_C3,group_to_decode_C4,group_to_decode_C5,group_to_decode_C6,group_to_decode_C7,group_to_decode_C8,group_to_decode_C9,group_to_decode_C10,group_to_decode_C11,group_to_decode_C12,group_to_decode_C13,group_to_decode_C14,group_to_decode_C15,group_to_decode_C16,group_to_decode_C17,group_to_decode_C18,group_to_decode_C19,group_to_decode_C20,group_to_decode_C21,group_to_decode_C22,group_to_decode_C23,group_to_decode_C24,group_to_decode_C25,group_to_decode_C26;
 
 // =============================================================================
  // 缓冲（Buffer）入口
@@ -343,7 +344,7 @@ wire [`inNum*`VWidth-1:0] APPmsg_ini_data_subx_0,APPmsg_ini_data_subx_1,APPmsg_i
 
 // read data of APPRam G0,G1
 wire [`inNum*`VWidth-1:0] APPmsg_G0_out_0,APPmsg_G0_out_1,APPmsg_G0_out_2,APPmsg_G0_out_3,APPmsg_G0_out_4,APPmsg_G0_out_5,APPmsg_G0_out_6,APPmsg_G0_out_7,APPmsg_G0_out_8,APPmsg_G0_out_9,APPmsg_G0_out_10,APPmsg_G0_out_11,APPmsg_G0_out_12,APPmsg_G0_out_13,APPmsg_G0_out_14,APPmsg_G0_out_15,APPmsg_G0_out_16,APPmsg_G0_out_17,APPmsg_G0_out_18,APPmsg_G0_out_19,APPmsg_G0_out_20,APPmsg_G0_out_21,APPmsg_G0_out_22,APPmsg_G0_out_23,APPmsg_G0_out_24,APPmsg_G0_out_25,APPmsg_G0_out_26;
-wire [`inNum*`VWidth-1:0] APPmsg_G1_out_0,APPmsg_G1_out_1,APPmsg_G1_out_2,APPmsg_G1_out_3,APPmsg_G1_out_4,APPmsg_G1_out_5,APPmsg_G1_out_6,APPmsg_G1_out_7,APPmsg_G1_out_8,APPmsg_G1_out_9,APPmsg_G1_out_10,APPmsg_G1_out_11,APPmsg_G1_out_12,APPmsg_G1_out_13,APPmsg_G1_out_14,APPmsg_G1_out_15,APPmsg_G1_out_16,APPmsg_G1_out_17,APPmsg_G1_out_18,APPmsg_G1_out_19,APPmsg_G1_out_20,APPmsg_G1_out_21,APPmsg_G1_out_22,APPmsg_G1_out_23,APPmsg_G1_out_24,APPmsg_G1_out_25,APPmsg_G0_out_26;
+wire [`inNum*`VWidth-1:0] APPmsg_G1_out_0,APPmsg_G1_out_1,APPmsg_G1_out_2,APPmsg_G1_out_3,APPmsg_G1_out_4,APPmsg_G1_out_5,APPmsg_G1_out_6,APPmsg_G1_out_7,APPmsg_G1_out_8,APPmsg_G1_out_9,APPmsg_G1_out_10,APPmsg_G1_out_11,APPmsg_G1_out_12,APPmsg_G1_out_13,APPmsg_G1_out_14,APPmsg_G1_out_15,APPmsg_G1_out_16,APPmsg_G1_out_17,APPmsg_G1_out_18,APPmsg_G1_out_19,APPmsg_G1_out_20,APPmsg_G1_out_21,APPmsg_G1_out_22,APPmsg_G1_out_23,APPmsg_G1_out_24,APPmsg_G1_out_25,APPmsg_G1_out_26;
 
 wire [`Zc-1:0] APP_dec_out_0,APP_dec_out_1,APP_dec_out_2,APP_dec_out_3,APP_dec_out_4,APP_dec_out_5,APP_dec_out_6,APP_dec_out_7,APP_dec_out_8,APP_dec_out_9,
 	 APP_dec_out_10,APP_dec_out_11,APP_dec_out_12,APP_dec_out_13,APP_dec_out_14,APP_dec_out_15,APP_dec_out_16,APP_dec_out_17,APP_dec_out_18,APP_dec_out_19,
@@ -5355,7 +5356,7 @@ always@(posedge clk or negedge rst_n)begin //CTV_addr_rd 读取深度计数
 	else if(iter_start)begin
 		CTV_addr_rd <= 0;	
 	end
-	else if(CTV_addr_rd == 10'd735)begin
+	else if(CTV_addr_rd == `Total_DPU_small_process_num)begin
 		CTV_addr_rd <= 0;
 	end
 	else if(CTV_rd_en)begin
