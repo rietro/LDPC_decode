@@ -25,7 +25,8 @@
 `define CTV_ProcessTime 7 //CN 更新消息需要 7 个周期完成。
 
 `define HijWidth 10 //每个 H 矩阵元素的存储宽度。存 shift 值 (0 ~ Zc-1)。 因为 Zc=512，log2(512)=9，所以用 13 bit 存储移位量。
-`define maxIterNum 3 // number of iterations 
+`define maxIterNum 8 // number of iterations 
+`define TotalLayernum 13
 `define APP_addr_width 5
 `define APP_addr_max 5'd16
 `define APP_addr_rd_max 4'd15

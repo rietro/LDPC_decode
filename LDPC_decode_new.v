@@ -80,6 +80,7 @@ assign P_1 = P-1'b1;
  // ============================================================================= 
 
 wire [5:0] totalLayernum;
+assign totalLayernum = `TotalLayernum;
 
 //meici diedai gengxing xinhao
 reg update_start_D0,update_start_D1,update_start_D2;
@@ -154,7 +155,7 @@ wire [`APPdata_Len-1:0] APPmsg_old_0,APPmsg_old_1,APPmsg_old_2,APPmsg_old_3,APPm
                   APPmsg_old_10,APPmsg_old_11,APPmsg_old_12,APPmsg_old_13,APPmsg_old_14,APPmsg_old_15,APPmsg_old_16,APPmsg_old_17,APPmsg_old_18,APPmsg_old_19,
                   APPmsg_old_20,APPmsg_old_21,APPmsg_old_22,APPmsg_old_23,APPmsg_old_24,APPmsg_old_25;
 wire [`APPdata_Len-1:0] APPmsg_old_26;
-assign APPmsg_old_26 = 'd0;
+ //assign APPmsg_old_26 = 'd0;
 
 reg [`APPdata_Len-1:0] APPmsg_old_26_D0,APPmsg_old_26_D1;				  
 wire [`APPdata_Len-1:0] APPmsg_new_0,APPmsg_new_1,APPmsg_new_2,APPmsg_new_3,APPmsg_new_4,APPmsg_new_5,APPmsg_new_6,APPmsg_new_7,APPmsg_new_8,APPmsg_new_9,
@@ -341,8 +342,8 @@ reg [`inNum*`VWidth-1:0] APPmsg_G1_in_0,APPmsg_G1_in_1,APPmsg_G1_in_2,APPmsg_G1_
 wire [`inNum*`VWidth-1:0] APPmsg_ini_data_subx_0,APPmsg_ini_data_subx_1,APPmsg_ini_data_subx_2,APPmsg_ini_data_subx_3,APPmsg_ini_data_subx_4,APPmsg_ini_data_subx_5,APPmsg_ini_data_subx_6,APPmsg_ini_data_subx_7,APPmsg_ini_data_subx_7_or_APPmsg_ini_data_subx_all,APPmsg_ini_data_subx_all;
 
 // read data of APPRam G0,G1
-wire [`inNum*`VWidth-1:0] APPmsg_G0_out_0,APPmsg_G0_out_1,APPmsg_G0_out_2,APPmsg_G0_out_3,APPmsg_G0_out_4,APPmsg_G0_out_5,APPmsg_G0_out_6,APPmsg_G0_out_7,APPmsg_G0_out_8,APPmsg_G0_out_9,APPmsg_G0_out_10,APPmsg_G0_out_11,APPmsg_G0_out_12,APPmsg_G0_out_13,APPmsg_G0_out_14,APPmsg_G0_out_15,APPmsg_G0_out_16,APPmsg_G0_out_17,APPmsg_G0_out_18,APPmsg_G0_out_19,APPmsg_G0_out_20,APPmsg_G0_out_21,APPmsg_G0_out_22,APPmsg_G0_out_23,APPmsg_G0_out_24,APPmsg_G0_out_25;
-wire [`inNum*`VWidth-1:0] APPmsg_G1_out_0,APPmsg_G1_out_1,APPmsg_G1_out_2,APPmsg_G1_out_3,APPmsg_G1_out_4,APPmsg_G1_out_5,APPmsg_G1_out_6,APPmsg_G1_out_7,APPmsg_G1_out_8,APPmsg_G1_out_9,APPmsg_G1_out_10,APPmsg_G1_out_11,APPmsg_G1_out_12,APPmsg_G1_out_13,APPmsg_G1_out_14,APPmsg_G1_out_15,APPmsg_G1_out_16,APPmsg_G1_out_17,APPmsg_G1_out_18,APPmsg_G1_out_19,APPmsg_G1_out_20,APPmsg_G1_out_21,APPmsg_G1_out_22,APPmsg_G1_out_23,APPmsg_G1_out_24,APPmsg_G1_out_25;
+wire [`inNum*`VWidth-1:0] APPmsg_G0_out_0,APPmsg_G0_out_1,APPmsg_G0_out_2,APPmsg_G0_out_3,APPmsg_G0_out_4,APPmsg_G0_out_5,APPmsg_G0_out_6,APPmsg_G0_out_7,APPmsg_G0_out_8,APPmsg_G0_out_9,APPmsg_G0_out_10,APPmsg_G0_out_11,APPmsg_G0_out_12,APPmsg_G0_out_13,APPmsg_G0_out_14,APPmsg_G0_out_15,APPmsg_G0_out_16,APPmsg_G0_out_17,APPmsg_G0_out_18,APPmsg_G0_out_19,APPmsg_G0_out_20,APPmsg_G0_out_21,APPmsg_G0_out_22,APPmsg_G0_out_23,APPmsg_G0_out_24,APPmsg_G0_out_25,APPmsg_G0_out_26;
+wire [`inNum*`VWidth-1:0] APPmsg_G1_out_0,APPmsg_G1_out_1,APPmsg_G1_out_2,APPmsg_G1_out_3,APPmsg_G1_out_4,APPmsg_G1_out_5,APPmsg_G1_out_6,APPmsg_G1_out_7,APPmsg_G1_out_8,APPmsg_G1_out_9,APPmsg_G1_out_10,APPmsg_G1_out_11,APPmsg_G1_out_12,APPmsg_G1_out_13,APPmsg_G1_out_14,APPmsg_G1_out_15,APPmsg_G1_out_16,APPmsg_G1_out_17,APPmsg_G1_out_18,APPmsg_G1_out_19,APPmsg_G1_out_20,APPmsg_G1_out_21,APPmsg_G1_out_22,APPmsg_G1_out_23,APPmsg_G1_out_24,APPmsg_G1_out_25,APPmsg_G0_out_26;
 
 wire [`Zc-1:0] APP_dec_out_0,APP_dec_out_1,APP_dec_out_2,APP_dec_out_3,APP_dec_out_4,APP_dec_out_5,APP_dec_out_6,APP_dec_out_7,APP_dec_out_8,APP_dec_out_9,
 	 APP_dec_out_10,APP_dec_out_11,APP_dec_out_12,APP_dec_out_13,APP_dec_out_14,APP_dec_out_15,APP_dec_out_16,APP_dec_out_17,APP_dec_out_18,APP_dec_out_19,
@@ -604,6 +605,7 @@ begin
 		group_to_decode_C23 <= 1'b0;
 		group_to_decode_C24 <= 1'b0;
 		group_to_decode_C25 <= 1'b0;
+		group_to_decode_C26 <= 1'b0;
 	end
 	else
 	begin
@@ -635,6 +637,7 @@ begin
 			group_to_decode_C23 <= group_to_decode_C23 + 1'b1;
 			group_to_decode_C24 <= group_to_decode_C24 + 1'b1;
 			group_to_decode_C25 <= group_to_decode_C25 + 1'b1;
+			group_to_decode_C26 <= group_to_decode_C26 + 1'b1;
 		end
 		else
 		begin
@@ -664,6 +667,7 @@ begin
 			group_to_decode_C23 <= group_to_decode_C23;
 			group_to_decode_C24 <= group_to_decode_C24;
 			group_to_decode_C25 <= group_to_decode_C25;
+			group_to_decode_C26 <= group_to_decode_C26;			
 		end
 	end
 end
@@ -2111,6 +2115,7 @@ assign APPmsg_old_22 = group_to_decode_C22?APPmsg_G1_out_22:APPmsg_G0_out_22;
 assign APPmsg_old_23 = group_to_decode_C23?APPmsg_G1_out_23:APPmsg_G0_out_23;
 assign APPmsg_old_24 = group_to_decode_C24?APPmsg_G1_out_24:APPmsg_G0_out_24;
 assign APPmsg_old_25 = group_to_decode_C25?APPmsg_G1_out_25:APPmsg_G0_out_25;
+assign APPmsg_old_26 = group_to_decode_C26?APPmsg_G1_out_26:APPmsg_G0_out_26;
 
 // APPmsg_decode_out is the concat of APP_dec_out_0~APP_dec_out_21
 assign APPmsg_decode_out = {APP_dec_out_21,APP_dec_out_20,APP_dec_out_19,APP_dec_out_18,APP_dec_out_17,APP_dec_out_16,APP_dec_out_15,APP_dec_out_14,APP_dec_out_13,APP_dec_out_12,APP_dec_out_11,APP_dec_out_10,APP_dec_out_9,APP_dec_out_8,APP_dec_out_7,APP_dec_out_6,APP_dec_out_5,APP_dec_out_4,APP_dec_out_3,APP_dec_out_2,APP_dec_out_1,APP_dec_out_0};
@@ -2231,7 +2236,7 @@ begin
 	end
 	else if(APP_addr_rd_end_D1)
 	begin
-		if(decode_valid_cnt == `BlkNumperDecoder)
+		if(decode_valid_cnt == `BlkNumperDecoder) //第几个输入的数据解码完成？
 			decode_valid_cnt <= 0;
 		else
 			decode_valid_cnt <= decode_valid_cnt + 1;
@@ -2272,7 +2277,7 @@ begin
 	begin
 		update_end <= 0;
 	end
-	else if(APP_rd_endD13)  //APP_rd_end通过读取地址个数控制 控制 update_end 对 Layernum 计数
+	else if(APP_rd_endD13)  //APP_rd_end通过读取地址个数控制 控制 update_end 对 Layernum 计数 在读完后延迟14拍也更新写完
 	begin
 		update_end <= 1;
 	end
@@ -2519,7 +2524,7 @@ get_msgfin u21_get_msgfin(
  // - update_start_*/update_end_*：层起止打拍；
  // - share_flag：资源复用/跨层共享标志（若有）；
  // ============================================================================= 
-assign totalLayernum = 6'd4;
+
 
 
 
@@ -4105,7 +4110,20 @@ always@(posedge clk or negedge rst_n)begin
 	end
 end
 
-
+always@(posedge clk or negedge rst_n)begin
+	if(!rst_n)begin
+		APP_addr_rd_26  <= 0;
+	end
+	else if(decode_start)begin
+		APP_addr_rd_26  <= 0;
+	end
+	else if(APP_addr_rd_26 == 10'd143)begin
+		APP_addr_rd_26  <= 0;
+	end
+	else if(APP_rd_en && share_flag)begin
+		APP_addr_rd_26  <= APP_addr_rd_26+1;
+	end
+end
 
 /*
 
@@ -4151,7 +4169,7 @@ APPmemory_0 u22_G0_APPmemory(.clka(clk),  .ena(APP_G0_wr_en_22), .wea(1'b1), .ad
 APPmemory_0 u23_G0_APPmemory(.clka(clk),  .ena(APP_G0_wr_en_23), .wea(1'b1), .addra(APP_G0_addr_wr_23), .dina(APPmsg_G0_in_23), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_23), .doutb(APPmsg_G0_out_23));
 APPmemory_0 u24_G0_APPmemory(.clka(clk),  .ena(APP_G0_wr_en_24), .wea(1'b1), .addra(APP_G0_addr_wr_24), .dina(APPmsg_G0_in_24), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_24), .doutb(APPmsg_G0_out_24));
 APPmemory_0 u25_G0_APPmemory(.clka(clk),  .ena(APP_G0_wr_en_25), .wea(1'b1), .addra(APP_G0_addr_wr_25), .dina(APPmsg_G0_in_25), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_25), .doutb(APPmsg_G0_out_25));
-shareAPPmemory shared_G0_APPmemory(.clka(clk),.ena(APP_G0_wr_en_26), .wea(1'b1), .addra(APP_G0_addr_wr_26), .dina(APPmsg_G0_in_26), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_26), .doutb(APPmsg_old_26));
+shareAPPmemory shared_G0_APPmemory(.clka(clk),.ena(APP_G0_wr_en_26), .wea(1'b1), .addra(APP_G0_addr_wr_26), .dina(APPmsg_G0_in_26), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_26), .doutb(APPmsg_G0_out_26));
 
 // APPRam Group 1
 APPmemory_0  u0_G1_APPmemory(.clka(clk),   .ena(APP_G1_wr_en_0 ), .wea(1'b1), .addra(APP_G1_addr_wr_0 ), .dina(APPmsg_G1_in_0 ), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_0 ), .doutb(APPmsg_G1_out_0 ));
@@ -4180,7 +4198,7 @@ APPmemory_0 u22_G1_APPmemory(.clka(clk),  .ena(APP_G1_wr_en_22), .wea(1'b1), .ad
 APPmemory_0 u23_G1_APPmemory(.clka(clk),  .ena(APP_G1_wr_en_23), .wea(1'b1), .addra(APP_G1_addr_wr_23), .dina(APPmsg_G1_in_23), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_23), .doutb(APPmsg_G1_out_23));
 APPmemory_0 u24_G1_APPmemory(.clka(clk),  .ena(APP_G1_wr_en_24), .wea(1'b1), .addra(APP_G1_addr_wr_24), .dina(APPmsg_G1_in_24), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_24), .doutb(APPmsg_G1_out_24));
 APPmemory_0 u25_G1_APPmemory(.clka(clk),  .ena(APP_G1_wr_en_25), .wea(1'b1), .addra(APP_G1_addr_wr_25), .dina(APPmsg_G1_in_25), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_25), .doutb(APPmsg_G1_out_25));
-shareAPPmemory shared_G1_APPmemory(.clka(clk),.ena(APP_G1_wr_en_26), .wea(1'b1), .addra(APP_G1_addr_wr_26), .dina(APPmsg_G1_in_26), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_26), .doutb(APPmsg_old_26));
+shareAPPmemory shared_G1_APPmemory(.clka(clk),.ena(APP_G1_wr_en_26), .wea(1'b1), .addra(APP_G1_addr_wr_26), .dina(APPmsg_G1_in_26), .clkb(clk),	.enb(1'd1),  .addrb(APP_addr_rd_26), .doutb(APPmsg_G1_out_26));
 
 always@(posedge clk or negedge rst_n) begin
 	if(!rst_n)begin
@@ -6625,16 +6643,27 @@ QSN u49_QSN(.clk(clk),.in(GN_APPmsg_reg_23),.p(P),.c(c_new_23),.out(APPmsg_new_2
 QSN u50_QSN(.clk(clk),.in(GN_APPmsg_reg_24),.p(P),.c(c_new_24),.out(APPmsg_new_24));
 QSN u51_QSN(.clk(clk),.in(GN_APPmsg_reg_25),.p(P),.c(c_new_25),.out(APPmsg_new_25));
 
+// always@(posedge clk or negedge rst_n)begin
+// 	if(!rst_n) begin
+// 		GN_APPmsg_reg_26_D0 <= 0;
+
+// 	end
+// 	else begin
+// 		GN_APPmsg_reg_26_D0 <= GN_APPmsg_reg_26;
+// 	end
+// end
+
 always@(posedge clk or negedge rst_n)begin
 	if(!rst_n) begin
 		GN_APPmsg_reg_26_D0 <= 0;
+		APPmsg_new_26 <= 0;
 
 	end
 	else begin
 		GN_APPmsg_reg_26_D0 <= GN_APPmsg_reg_26;
+		APPmsg_new_26 <= GN_APPmsg_reg_26_D0;
 	end
 end
-
 
 
 
