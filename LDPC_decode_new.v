@@ -2596,7 +2596,7 @@ always@(posedge clk or negedge rst_n)begin //HROM 选取读取开始位置
 	end
 end
 
-HROM1_0 u10_HRom(.addra(shift_addr_rd1[1:0]),.clka(clk),.douta(bg1_shift_0),.ena(HROM_rd_en)); //现在矩阵只有4行 后续需要修改	
+HROM1_0 u10_HRom(.addra(shift_addr_rd1[3:0]),.clka(clk),.douta(bg1_shift_0),.ena(HROM_rd_en)); //现在矩阵只有4行 后续需要修改	
 
 always @(posedge clk or negedge rst_n) begin
     if(!rst_n)begin
@@ -3508,7 +3508,7 @@ always@(posedge clk or negedge rst_n)begin //share_flag 共享RAM 是否开启
 	end
 	else if(iter_start)
 		share_flag  <= 0;
-	else if(Layernum == 5'd4)begin
+	else if(Layernum >= 5'd4)begin
 		share_flag  <= 1;
 	end
 	else
