@@ -23,7 +23,7 @@ def convert_matrix(infile: str, outfile: str):
     # 写出
     with open(outfile, "w", encoding="utf-8") as f:
         for row in binary_matrix:
-            f.write(" ".join(row) + "\n")
+            f.write("".join(row) + ",\n")
 
     print(f"✅ 转换完成，结果已保存到 {outfile}")
 
