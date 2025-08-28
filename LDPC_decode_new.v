@@ -301,6 +301,17 @@ reg update_start,update_end;
 reg iter_start_D0,iter_start_D1,iter_start_D2,iter_start_D3;
 reg first_iter_valid;
 reg decode_out_start;
+reg decode_out_start_to_decode_valid_time;
+
+always @(posedge clk or negedge rst_n) begin
+    if(!rst_n)
+        decode_out_start_to_decode_valid_time <= 0; //复位
+    else if (decode_out_start)
+        decode_out_start_to_decode_valid_time <= 1;
+    else if (decode_valid)
+        decode_out_start_to_decode_valid_time <= 0;
+end
+
 
 reg APP_addr_rd_end;
 reg APP_addr_rd_end_D0,APP_addr_rd_end_D1;
@@ -5275,7 +5286,10 @@ always@(posedge clk or negedge rst_n)begin // APP读取一拍后再读取 CTV_rd
 		CTV_rd_en <= 0;
 	end
 	else begin
+		if(!decode_out_start_to_decode_valid_time)
 		CTV_rd_en <= APP_rd_D1;
+		else 
+		CTV_rd_en <= 0;
 	end
 end
 
@@ -5327,7 +5341,7 @@ always@(posedge clk or negedge rst_n)begin //CTV_rd_begin_cnt 经过 CTV_Process
 	else if(CTV_wr_en_cnt == APP_addr_rd_max)begin
 		CTV_wr_en <= 0;
 	end
-	else if(CTV_rd_begin_cnt == `CTV_ProcessTime)begin
+	else if(CTV_rd_begin_cnt == `CTV_ProcessTime && !decode_out_start_to_decode_valid_time)begin
 		CTV_wr_en <= 1;
 	end
 	else
