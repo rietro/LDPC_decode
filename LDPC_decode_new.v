@@ -312,7 +312,6 @@ always @(posedge clk or negedge rst_n) begin
         decode_out_start_to_decode_valid_time <= 0;
 end
 
-
 reg APP_addr_rd_end;
 reg APP_addr_rd_end_D0,APP_addr_rd_end_D1;
 
@@ -2604,7 +2603,10 @@ always@(posedge clk or negedge rst_n)begin //HROM 选取读取开始位置
 		shift_addr_rd1 <= shift_addr_rd1_ini;	
 	end
 	else if(APP_rd_endD10)begin
+		if( shift_addr_rd1 < `TotalLayernum -1)
+		begin
 		shift_addr_rd1 <= shift_addr_rd1 + 1;
+		end
 	end
 end
 
