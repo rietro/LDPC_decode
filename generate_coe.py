@@ -6,7 +6,10 @@ with open("APPmsg_input_buffer_0.coe", "w") as f:
     count = 0       # 计数器
     for j in range(4):
         for i in range(512):
-            bin_str = format(value % 64, "06b")
+            if (value == 0 or value == 64):
+                bin_str = format(1 % 64, "06b")
+            else:
+                bin_str = format(value % 64, "06b")
 
             if i < 511:
                 f.write(bin_str)

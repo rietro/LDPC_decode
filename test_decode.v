@@ -102,9 +102,16 @@ begin
 	end
 	else if(ready && buffer_ready && !end_all)
 	begin
+		if(cnt_128 == 8'd173)
+		begin 
+			buffer_valid_P2 <= 0;
+		end
+		else
+		begin
 		buffer_valid_P2 <= 1;
+		end
 	end
-	else if(cnt_128 == 8'd175)
+	else if(cnt_128 == 8'd173)
 	begin
 		buffer_valid_P2 <= 0;
 	end

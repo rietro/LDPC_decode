@@ -1,11 +1,13 @@
 # matrix_to_10bit.py
 # 将任意二维矩阵转换为 10 位补码二进制形式
 
+# def to_10bit_binary(n: int) -> str:
+#     if n >= 0:
+#         return "0" + format(n, '09b')[-9:]
+#     else:
+#         return "1" + format(abs(n), '09b')[-9:]
 def to_10bit_binary(n: int) -> str:
-    if n >= 0:
-        return "0" + format(n, '09b')[-9:]
-    else:
-        return "1" + format(abs(n), '09b')[-9:]
+    return format(n & 0x3FF, '010b')
     
 def convert_matrix(infile: str, outfile: str):
     matrix = []

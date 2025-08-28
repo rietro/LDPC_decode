@@ -485,7 +485,7 @@ begin
 			end
 			FULL:
 			begin
-				if(buffer_end && ~decode_end)
+				if((buffer_end || buffer_last) && ~decode_end)
 				begin
 					buffer_ready <= 0;
 				end
@@ -3539,7 +3539,7 @@ always@(posedge clk or negedge rst_n)begin
 	if(!rst_n)begin
 		APP_addr_wr_26  <= 0;
 	end
-	else if(decode_start)begin
+	else if(iter_start)begin
 		APP_addr_wr_26  <= 0;
 	end
 	else if(APP_decodin_wr_en && share_flag)begin
