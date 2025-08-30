@@ -50,8 +50,8 @@ always @(posedge clk or negedge rst_n) begin
 		iLs <= 3'd1;
 		jLs <= 3'd1;
 		P   <= 6'd32;
-		APP_addr_max <= 6'd16;//深度32
-		APP_addr_rd_max <= 5'd15;
+		APP_addr_max <= 5'd16;//深度32
+		APP_addr_rd_max <= 4'd15;
 	end
 end
 
@@ -102,7 +102,7 @@ begin
 	end
 	else if(ready && buffer_ready && !end_all)
 	begin
-		if(cnt_128 == 8'd173)
+		if(cnt_128 == 8'd175)
 		begin 
 			buffer_valid_P2 <= 0;
 		end
@@ -111,7 +111,7 @@ begin
 		buffer_valid_P2 <= 1;
 		end
 	end
-	else if(cnt_128 == 8'd173)
+	else if(cnt_128 == 8'd175)
 	begin
 		buffer_valid_P2 <= 0;
 	end
@@ -143,7 +143,7 @@ begin
 	begin
 		buffer_start <= 0;
 	end
-	else if(buffer_valid_P1 && !buffer_valid)
+	else if(buffer_valid_P1 && !buffer_valid && buffer_ready)
 	begin
 		buffer_start <= 1;
 	end
@@ -192,6 +192,10 @@ begin
 		begin
 			cnt_32 <= cnt_32 + 1;
 		end
+	end
+	else
+	begin
+	   cnt_32 <= 0;
 	end
 end
 
@@ -319,43 +323,60 @@ APPmsg_input_buffer_0 u0_APPmsg_input_buffer(
 	.addra(buffer_addr_0),
 	.douta(APPmsg_ini_subx_0)
 );
-APPmsg_input_buffer_0 u1_APPmsg_input_buffer(
+APPmsg_input_buffer_1 u1_APPmsg_input_buffer(
 	.clka(clk),
 	.addra(buffer_addr_1),
 	.douta(APPmsg_ini_subx_1)
 );
-APPmsg_input_buffer_0 u2_APPmsg_input_buffer(
+APPmsg_input_buffer_2 u2_APPmsg_input_buffer(
 	.clka(clk),
 	.addra(buffer_addr_2),
 	.douta(APPmsg_ini_subx_2)
 );
-APPmsg_input_buffer_0 u3_APPmsg_input_buffer(
+APPmsg_input_buffer_3 u3_APPmsg_input_buffer(
 	.clka(clk),
 	.addra(buffer_addr_3),
 	.douta(APPmsg_ini_subx_3)
 );
-APPmsg_input_buffer_0 u4_APPmsg_input_buffer(
+APPmsg_input_buffer_4 u4_APPmsg_input_buffer(
 	.clka(clk),
 	.addra(buffer_addr_4),
 	.douta(APPmsg_ini_subx_4)
 );
-APPmsg_input_buffer_0 u5_APPmsg_input_buffer(
+APPmsg_input_buffer_5 u5_APPmsg_input_buffer(
 	.clka(clk),
 	.addra(buffer_addr_5),
 	.douta(APPmsg_ini_subx_5)
 );
-APPmsg_input_buffer_0 u6_APPmsg_input_buffer(
+APPmsg_input_buffer_6 u6_APPmsg_input_buffer(
 	.clka(clk),
 	.addra(buffer_addr_6),
 	.douta(APPmsg_ini_subx_6)
 );
-APPmsg_input_buffer_0 u7_APPmsg_input_buffer(
+APPmsg_input_buffer_7 u7_APPmsg_input_buffer(
 	.clka(clk),
 	.addra(buffer_addr_7),
 	.douta(APPmsg_ini_subx_7)
 );
 
+integer fp;
 
+initial begin
+    fp = $fopen("data_out.txt", "w");  // 打开文件
+    if (fp == 0) begin
+        $display("无法打开文件！");
+        $finish;
+    end
+end
+
+always @(*) begin
+    if (decode_valid) begin
+        // 写入二进制字符串
+        $fwrite(fp, "%b\n", APPmsg_decode_out);  
+        // %b 表示二进制格式
+        // 每个 data_out 占一行
+    end
+end
 endmodule	
 
 
