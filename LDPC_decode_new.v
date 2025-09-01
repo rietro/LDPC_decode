@@ -56,7 +56,7 @@ module LDPC_Dec(
 	input [2:0] jLs,
 	input [5:0] P,
 	input [`APP_addr_width-1:0] APP_addr_max, //输入深度16 宽度5
-	input [`APP_addr_width-2:0] APP_addr_rd_max, //最大地址15 
+	input [`APP_addr_width-2:0] APP_addr_rd_max, //最大地址15 宽度4
 
 	output reg   			buffer_ready,
 	output reg  			decode_valid,
