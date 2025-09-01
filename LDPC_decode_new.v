@@ -80,7 +80,12 @@ assign P_1 = P-1'b1;
  // ============================================================================= 
 
 wire [5:0] totalLayernum;
-assign totalLayernum = `TotalLayernum;
+assign totalLayernum = (iLs==1) ? `TotalLayernum_23 :
+                        ((iLs==2) ? `TotalLayernum_78 : 0);
+
+wire [9:0] Total_DPU_small_process_num;
+assign Total_DPU_small_process_num =  (iLs==1) ? `Total_DPU_small_process_num_23 :
+                                     ((iLs==2) ? `Total_DPU_small_process_num_78 : 0);
 
 //meici diedai gengxing xinhao
 reg update_start_D0,update_start_D1,update_start_D2;
@@ -98,6 +103,7 @@ reg [8:0] shift_addr_rd1;
 reg [`HROM_Width-1:0] bg1_shift;
 
 wire [`HROM_Width-1:0] bg1_shift_0;
+wire [`HROM_Width-1:0] bg1_shift_1;
 
 wire [`HijWidth-1:0] shift_0,shift_1,shift_2,shift_3,shift_4,shift_5,shift_6,shift_7,shift_8,shift_9,
     shift_10,shift_11,shift_12,shift_13,shift_14,shift_15,shift_16,shift_17,shift_18,shift_19,
@@ -2603,14 +2609,16 @@ always@(posedge clk or negedge rst_n)begin //HROM 选取读取开始位置
 		shift_addr_rd1 <= shift_addr_rd1_ini;	
 	end
 	else if(APP_rd_endD10)begin
-		if( shift_addr_rd1 < `TotalLayernum -1)
+		if( shift_addr_rd1 < totalLayernum -1)
 		begin
 		shift_addr_rd1 <= shift_addr_rd1 + 1;
 		end
 	end
 end
 
-HROM1_0 u10_HRom(.addra(shift_addr_rd1[3:0]),.clka(clk),.douta(bg1_shift_0),.ena(HROM_rd_en)); //现在矩阵只有4行 后续需要修改	
+HROM1_0 u23_HRom(.addra(shift_addr_rd1[3:0]),.clka(clk),.douta(bg1_shift_0),.ena(HROM_rd_en)); //13行	
+
+HROM1_1 u78_HRom(.addra(shift_addr_rd1[2:0]),.clka(clk),.douta(bg1_shift_1),.ena(HROM_rd_en)); //5行
 
 always @(posedge clk or negedge rst_n) begin
     if(!rst_n)begin
@@ -2621,6 +2629,10 @@ always @(posedge clk or negedge rst_n) begin
 		if(iLs == 3'd1)
 		begin
 			bg1_shift <= bg1_shift_0;
+		end
+		else if(iLs == 3'd2)
+		begin
+			bg1_shift <= bg1_shift_1;
 		end
 		else
 		begin
@@ -5372,7 +5384,7 @@ always@(posedge clk or negedge rst_n)begin //CTV_addr_rd 读取深度计数
 	else if(iter_start)begin
 		CTV_addr_rd <= 0;	
 	end
-	else if(CTV_addr_rd == `Total_DPU_small_process_num)begin
+	else if(CTV_addr_rd == Total_DPU_small_process_num)begin
 		CTV_addr_rd <= 0;
 	end
 	else if(CTV_rd_en)begin
