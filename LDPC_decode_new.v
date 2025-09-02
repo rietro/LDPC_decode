@@ -194,7 +194,7 @@ reg CTV_rd_en;
 reg CTV_wr_en;
 reg [3:0] CTV_wr_en_cnt;
 reg [4:0] CTV_rd_en_cnt;
-reg [9:0] CTV_addr_wr,CTV_addr_rd;
+reg [9:0] CTV_addr_wr,CTV_addr_rd; // 针对标准化，为了适配各种码长可能需要修改
 wire [`DPUctvdata_Len-1:0]CTV_old_0,CTV_old_1,CTV_old_2,CTV_old_3,CTV_old_4,CTV_old_5,CTV_old_6,CTV_old_7,CTV_old_8,CTV_old_9,
                   CTV_old_10,CTV_old_11,CTV_old_12,CTV_old_13,CTV_old_14,CTV_old_15,CTV_old_16,CTV_old_17,CTV_old_18,CTV_old_19,
                   CTV_old_20,CTV_old_21,CTV_old_22,CTV_old_23,CTV_old_24,CTV_old_25,CTV_old_26,CTV_old_27,CTV_old_28,CTV_old_29,CTV_old_30,CTV_old_31;  
@@ -707,7 +707,7 @@ end
 // during initializing, only 6 APPRams' wr_en is high at a time (except the 1st time)
 always @(*)   //控制信号往哪一个RAM写入，第一个buffer
 begin
-	if(buffer_valid_D0 && group_to_buffer == 0) //写入APP时
+	if(buffer_valid_D0 && group_to_buffer == 0 && state_cur != WAIT) //写入APP时
 	begin
 		case(APPmsg_ini_sub_x_D0)
 		0:
@@ -899,7 +899,7 @@ end
  // =============================================================================
 always @(*) //控制信号往哪一个RAM写入，针对第二个buffer
 begin
-	if(buffer_valid_D0 && group_to_buffer == 1)
+	if(buffer_valid_D0 && group_to_buffer == 1 && state_cur != WAIT)
 	begin
 		case(APPmsg_ini_sub_x_D0)
 		0:
