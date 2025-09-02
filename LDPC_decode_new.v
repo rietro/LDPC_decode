@@ -4140,10 +4140,13 @@ always@(posedge clk or negedge rst_n)begin
 	if(!rst_n)begin
 		APP_addr_rd_26  <= 0;
 	end
-	else if(decode_start)begin
+	else if(decode_start)begin //可以修改为iter_start 删除下面两个判断
 		APP_addr_rd_26  <= 0;
 	end
-	else if(APP_addr_rd_26 == 10'd143)begin
+	else if(APP_addr_rd_26 == 10'd143 && iLs == 1)begin
+		APP_addr_rd_26  <= 0;
+	end
+	else if(APP_addr_rd_26 == 10'd15 && iLs == 2)begin
 		APP_addr_rd_26  <= 0;
 	end
 	else if(APP_rd_en && share_flag)begin
