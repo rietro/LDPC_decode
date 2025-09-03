@@ -26,8 +26,15 @@
 
 `define HijWidth 10 //每个 H 矩阵元素的存储宽度。存 shift 值 (0 ~ Zc-1)。 因为 Zc=512，log2(512)=9，所以用 13 bit 存储移位量。
 `define maxIterNum 8 // number of iterations 
-`define TotalLayernum 13
-`define Total_DPU_small_process_num `TotalLayernum*`APP_addr_max-1 //CTV RAM num
+
+`define TotalLayernum_23 13
+`define TotalLayernum_78 5
+
+`define Total_DPU_small_process_num_23 `TotalLayernum_23*`APP_addr_max-1 //CTV RAM num
+`define Total_DPU_small_process_num_78 `TotalLayernum_78*`APP_addr_max-1 //CTV RAM num
+
+//`define TotalLayernum 13
+//`define Total_DPU_small_process_num `TotalLayernum*`APP_addr_max-1 //CTV RAM num
 
 `define APP_addr_width 5
 `define APP_addr_max 5'd16

@@ -73,7 +73,7 @@ always @(posedge clk or negedge rst_n) begin
 
 	end
 	else begin
-		iLs <= 3'd2; // 1:2/3码率 2：7/8码率
+		iLs <= 3'd1; // 1:2/3码率 2：7/8码率
 		jLs <= 3'd1;
 		P   <= 6'd32;
 		APP_addr_max <= 5'd16;//深度32
