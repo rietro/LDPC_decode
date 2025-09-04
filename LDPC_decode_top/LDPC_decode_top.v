@@ -7,7 +7,7 @@ module LDPC_decode_top(
     output reg W_READY,
     input W_VALID,
     input W_LAST,
-    input [`Zc*`VWidth-1:0] W_DATA, //ÊäÈë512³¤
+    input [`Zc*`VWidth-1:0] W_DATA, //è¾“å…¥512é•¿
     
     input R_READY,
     output reg R_VALID,
@@ -46,28 +46,28 @@ wire decode_valid;
 wire [2:0] decode_valid_cnt;
 
 reg [`Zc*`DecOut_lifting-1:0] APPmsg_decode_out;
-reg new_storaged_data_not_in_use; //Ôİ´æµÄÊı¾İ£¬ÔÚ´æ´¢Íê³ÉºóÎª1£¬ÔÚÍêÈ«ÊäÈëÒëÂëÆ÷ºóÎª0
-reg new_storaged_out_not_in_use; //Ôİ´æµÄÊı¾İ£¬ÔÚ´æ´¢Íê³ÉºóÎª1£¬ÔÚÍêÈ«ÊäÈëÒëÂëÆ÷ºóÎª0
+reg new_storaged_data_not_in_use; //æš‚å­˜çš„æ•°æ®ï¼Œåœ¨å­˜å‚¨å®Œæˆåä¸º1ï¼Œåœ¨å®Œå…¨è¾“å…¥è¯‘ç å™¨åä¸º0
+reg new_storaged_out_not_in_use; //æš‚å­˜çš„æ•°æ®ï¼Œåœ¨å­˜å‚¨å®Œæˆåä¸º1ï¼Œåœ¨å®Œå…¨è¾“å…¥è¯‘ç å™¨åä¸º0
 
 always @(posedge clk or negedge rst_n) begin
     if(!rst_n)begin
 		iLs <= 0;
 		jLs <= 0;
 		P   <= 6'd32;
-		APP_addr_max <= 6'd16; //Éî¶È
+		APP_addr_max <= 6'd16; //æ·±åº¦
 		APP_addr_rd_max <= 5'd15;
 
 	end
 	else begin
-		iLs <= mode; // 1:2/3ÂëÂÊ 2£º7/8ÂëÂÊ
+		iLs <= mode; // 1:2/3ç ç‡ 2ï¼š7/8ç ç‡
 		jLs <= 3'd1;
 		P   <= 6'd32;
-		APP_addr_max <= 5'd16;//Éî¶È32
+		APP_addr_max <= 5'd16;//æ·±åº¦32
 		APP_addr_rd_max <= 4'd15;
 	end
 end
 
-//Ê×ÏÈÊÇĞ´ÈëÊı¾İµ½ÖĞ×ªÕ¾ÖĞ
+//é¦–å…ˆæ˜¯å†™å…¥æ•°æ®åˆ°ä¸­è½¬ç«™ä¸­
 reg[4:0] llr_in_cnt;
 reg[4:0] out_cnt;
 
@@ -79,9 +79,9 @@ reg [`Zc*`VWidth-1:0] llr_in_16,llr_in_17,llr_in_18,llr_in_19,llr_in_20,llr_in_2
 
 reg [`Zc*`VWidth-1:0] llr_in_24,llr_in_25,llr_in_26,llr_in_27,llr_in_28,llr_in_29,llr_in_30,llr_in_31;
 
-//ÖĞ×ªÕ¾Ôİ´æÊı¾İ
+//ä¸­è½¬ç«™æš‚å­˜æ•°æ®
 
-//¸ù¾İÄ£Ê½ÊµÏÖ²»Í¬ÂëÂÊµÄÊı¾İÔİ´æ 23ÂëÂÊĞèÒª24ÅÄ, 78ÂëÂÊĞèÒª16ÅÄ
+//æ ¹æ®æ¨¡å¼å®ç°ä¸åŒç ç‡çš„æ•°æ®æš‚å­˜ 23ç ç‡éœ€è¦24æ‹, 78ç ç‡éœ€è¦16æ‹
 always @(posedge clk or negedge rst_n)
 begin
     if(!rst_n)
@@ -92,14 +92,14 @@ begin
     begin
         llr_in_cnt <= 0;
     end
-    else if(W_VALID && iLs == 1) //23ÂëÂÊ
+    else if(W_VALID && iLs == 1) //23ç ç‡
     begin
         if( llr_in_cnt < 5'd31)
             llr_in_cnt <= llr_in_cnt + 5'd1;
         else if (llr_in_cnt == 5'd31)
             llr_in_cnt <= 0;
     end
-    else if(W_VALID && iLs == 2) //78ÂëÂÊ
+    else if(W_VALID && iLs == 2) //78ç ç‡
      begin
         if( llr_in_cnt < 5'd23)
             llr_in_cnt <= llr_in_cnt + 5'd1;
@@ -108,7 +108,7 @@ begin
     end
 end
 
-//½«ĞÅÏ¢´æÈëÔİ´æÆ÷
+//å°†ä¿¡æ¯å­˜å…¥æš‚å­˜å™¨
 always @(*)
 begin
     if(!rst_n)
@@ -155,7 +155,7 @@ begin
             5'd31: llr_in_31<=W_DATA;
         endcase      
     end
-end //´æÈëÍê±Ï
+end //å­˜å…¥å®Œæ¯•
 
 always @(posedge clk or negedge rst_n) 
 begin
@@ -163,13 +163,13 @@ begin
     begin
         new_storaged_data_not_in_use <= 0;
     end
-    else if(W_LAST) //Êı¾İÔİ´æÍê±ÏÖÃ1
+    else if(W_LAST) //æ•°æ®æš‚å­˜å®Œæ¯•ç½®1
         new_storaged_data_not_in_use <= 1;
-    else if( buffer_last )  //Êı¾İ´æÈëÒëÂëÆ÷Íê±ÏÖÃ 0
+    else if( buffer_last )  //æ•°æ®å­˜å…¥è¯‘ç å™¨å®Œæ¯•ç½® 0
 	    new_storaged_data_not_in_use <= 0;  
 end
 
-always @(posedge clk or negedge rst_n) //ÊÜµ½Á½¸ö¿ØÖÆ£¬Ê×ÏÈÊÇºÍÄÚ²¿buffer_readyÏàÍ¬£¬µ«ÊÇÔÚÊı¾İ´æ´¢Íê³Éºóµ½´æ´¢Êı¾İµ½ÄÚ²¿ÒëÂëÆ÷µÄÊ±¼äĞèÒªÖÃ0£¬ËæºóÔÙÏàÍ¬
+always @(posedge clk or negedge rst_n) //å—åˆ°ä¸¤ä¸ªæ§åˆ¶ï¼Œé¦–å…ˆæ˜¯å’Œå†…éƒ¨buffer_readyç›¸åŒï¼Œä½†æ˜¯åœ¨æ•°æ®å­˜å‚¨å®Œæˆååˆ°å­˜å‚¨æ•°æ®åˆ°å†…éƒ¨è¯‘ç å™¨çš„æ—¶é—´éœ€è¦ç½®0ï¼Œéšåå†ç›¸åŒ
 begin
     if(!rst_n)
     begin
@@ -177,7 +177,7 @@ begin
     end
     else if(W_LAST)
         W_READY <=0;
-    else if( new_storaged_data_not_in_use ) // µ«ÊÇÔÚÊı¾İ´æ´¢Íê³Éºóµ½´æ´¢Êı¾İµ½ÄÚ²¿ÒëÂëÆ÷µÄÊ±¼äĞèÒªÖÃ0£¬ËæºóÔÙÏàÍ¬
+    else if( new_storaged_data_not_in_use ) // ä½†æ˜¯åœ¨æ•°æ®å­˜å‚¨å®Œæˆååˆ°å­˜å‚¨æ•°æ®åˆ°å†…éƒ¨è¯‘ç å™¨çš„æ—¶é—´éœ€è¦ç½®0ï¼Œéšåå†ç›¸åŒ
 	    W_READY <=0;  
 	else if ( !new_storaged_data_not_in_use)
 		W_READY <=1;  
@@ -421,9 +421,9 @@ begin
     begin
         new_storaged_out_not_in_use <= 0;
     end
-    else if(decode_valid) //Êı¾İÔİ´æÍê±ÏÖÃ1
+    else if(decode_valid) //æ•°æ®æš‚å­˜å®Œæ¯•ç½®1
         new_storaged_out_not_in_use <=1;
-    else if( R_LAST )  //Êı¾İ´æÈëÒëÂëÆ÷Íê±ÏÖÃ 0
+    else if( R_LAST )  //æ•°æ®å­˜å…¥è¯‘ç å™¨å®Œæ¯•ç½® 0
 	    new_storaged_out_not_in_use <=0;  
 end
 
@@ -433,9 +433,9 @@ begin
     begin
         R_VALID <= 0;
     end
-    else if(new_storaged_out_not_in_use) //Êı¾İÔİ´æÍê±ÏÖÃ1
+    else if(new_storaged_out_not_in_use) //æ•°æ®æš‚å­˜å®Œæ¯•ç½®1
         R_VALID <=1;
-    else if( R_LAST || !new_storaged_out_not_in_use )  //Êı¾İ´æÈëÒëÂëÆ÷Íê±ÏÖÃ 0
+    else if( R_LAST || !new_storaged_out_not_in_use )  //æ•°æ®å­˜å…¥è¯‘ç å™¨å®Œæ¯•ç½® 0
 	    R_VALID <= 0;  
 end
 
@@ -445,9 +445,9 @@ begin
     begin
         R_LAST <= 0;
     end
-    else if( out_cnt == 5'd31 && iLs == 1) //Êı¾İÔİ´æÍê±ÏÖÃ1
+    else if( out_cnt == 5'd31 && iLs == 1) //æ•°æ®æš‚å­˜å®Œæ¯•ç½®1
         R_LAST <=1;
-    else if( out_cnt == 5'd23 && iLs == 2 )  //Êı¾İ´æÈëÒëÂëÆ÷Íê±ÏÖÃ 0
+    else if( out_cnt == 5'd23 && iLs == 2 )  //æ•°æ®å­˜å…¥è¯‘ç å™¨å®Œæ¯•ç½® 0
 	    R_LAST <= 1;  
 	else
 		R_LAST <= 0;  
@@ -463,14 +463,14 @@ begin
     begin
         out_cnt <= 0;
     end
-    else if(R_VALID && iLs == 1) //23ÂëÂÊ
+    else if(R_VALID && iLs == 1) //23ç ç‡
     begin
         if( out_cnt < 5'd23)
             out_cnt <= out_cnt + 5'd1;
         else if (out_cnt == 5'd23)
             out_cnt <= 0;
     end
-    else if(R_VALID && iLs == 2) //78ÂëÂÊ
+    else if(R_VALID && iLs == 2) //78ç ç‡
      begin
         if( out_cnt < 5'd15)
             out_cnt <= out_cnt + 5'd1;
@@ -510,19 +510,19 @@ LDPC_Dec u_LDPC_Dec(
 integer fp;
 
 initial begin
-    fp = $fopen("data_out.txt", "w");  // ´ò¿ªÎÄ¼ş
+    fp = $fopen("data_out.txt", "w");  // æ‰“å¼€æ–‡ä»¶
     if (fp == 0) begin
-        $display("ÎŞ·¨´ò¿ªÎÄ¼ş£¡");
+        $display("æ— æ³•æ‰“å¼€æ–‡ä»¶ï¼");
         $finish;
     end
 end
 
 always @(*) begin
     if (decode_valid) begin
-        // Ğ´Èë¶ş½øÖÆ×Ö·û´®
+        // å†™å…¥äºŒè¿›åˆ¶å­—ç¬¦ä¸²
         $fwrite(fp, "%b\n", APPmsg_decode_out);  
-        // %b ±íÊ¾¶ş½øÖÆ¸ñÊ½
-        // Ã¿¸ö data_out Õ¼Ò»ĞĞ
+        // %b è¡¨ç¤ºäºŒè¿›åˆ¶æ ¼å¼
+        // æ¯ä¸ª data_out å ä¸€è¡Œ
     end
 end
 endmodule	
