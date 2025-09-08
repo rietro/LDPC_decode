@@ -993,8 +993,8 @@ input signed [`VRWidth-1:0] app_reg;
 endfunction
 //灏唖ign-9bit鐨刢tv杞崲鎴恠ign-7bit锛岄槻姝㈡暟鎹孩鍑�
 
-function [`CWidth-1:0] CTV_quantize;
-input signed [`AWidth-1:0] ctv_reg;
+function [`CWidth-1:0] CTV_quantize; //输出CWidth 4   
+input signed [`AWidth-1:0] ctv_reg; //AWidth 8 输入CRWidth 8
 	if(ctv_reg > `CMax)
 		CTV_quantize = `CMax;
 	else if(ctv_reg < `CMin)
