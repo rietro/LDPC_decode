@@ -1,10 +1,10 @@
 `timescale 1ns/1ps
 
-module tb;
+module my_LDPC_decode_tb;
 
 // 数据大小
-parameter WIDTH = 32;             // 每个数据宽度
-parameter DEPTH = 512 * 6;        // 数据个数 = 3072
+parameter DEPTH = 32;             // 数据个数
+parameter WIDTH = 512 * 6;        // 每个 数据宽度3072
 parameter TOTAL = WIDTH * DEPTH;  // 总bit数 = 98304
 
 // 存储器
@@ -15,6 +15,7 @@ integer i;
 reg clk;
 reg rst_n;
 reg ready;
+reg [1:0] mode;
 
 initial begin
 
@@ -38,10 +39,10 @@ initial begin
     // 00000000000000000000000000000001
     // 00000000000000000000000000000010
     // ...
-    $readmemb("input_data.txt", mem);
+    $readmemb("data_in.txt", mem);
 
     // 打印前几行数据验证
-    for (i = 0; i < 10; i = i + 1) begin
+    for (i = 31; i < 32; i = i + 1) begin
         $display("mem[%0d] = %b", i, mem[i]);
     end
     #50 ready = 1;
@@ -50,9 +51,10 @@ end
 
 always #5 clk = ~clk;
 
-reg W_READY,W_VALID,W_LAST,R_READY,R_VALID,R_LAST;
-reg [`Zc*`VWidth-1:0] R_DATA,W_DATA;
-
+wire W_READY,R_VALID,R_LAST;
+reg W_VALID,W_LAST,R_READY;
+reg [`Zc*`VWidth-1:0] W_DATA;
+wire [`Zc*`VWidth-1:0]R_DATA;
 
 reg [4:0] w_data_cnt;
 always @(posedge clk or negedge rst_n)
@@ -65,14 +67,14 @@ begin
     begin
         w_data_cnt <= 0;
     end
-    else if(W_VALID && iLs == 1) //23码率
+    else if(W_VALID && mode == 1) //23码率
     begin
         if( w_data_cnt < 5'd31)
             w_data_cnt <= w_data_cnt + 5'd1;
         else if (w_data_cnt == 5'd31)
             w_data_cnt <= 0;
     end
-    else if(W_VALID && iLs == 2) //78码率
+    else if(W_VALID && mode == 2) //78码率
      begin
         if( w_data_cnt < 5'd23)
             w_data_cnt <= w_data_cnt + 5'd1;
@@ -91,7 +93,7 @@ begin
 		W_VALID <= 0;
     end
 
-    else if (iLs == 1)
+    else if (mode == 1)
     begin
         if( w_data_cnt ==  5'd31)
             W_VALID <= 0;
@@ -99,7 +101,7 @@ begin
             W_VALID <= 1;
     end
 
-    else if (iLs == 2)
+    else if (mode == 2)
     begin
         if( w_data_cnt ==  5'd23)
             W_VALID <= 0;
@@ -115,7 +117,7 @@ begin
 		W_LAST <= 0;
     end
 
-    else if (iLs == 1)
+    else if (mode == 1)
     begin
         if( W_VALID &&w_data_cnt ==  5'd30)
             W_LAST <= 1;
@@ -123,7 +125,7 @@ begin
             W_LAST <= 0;
     end
 
-    else if (iLs == 1)
+    else if (mode == 2)
     begin
         if( W_VALID &&w_data_cnt ==  5'd22)
             W_LAST <= 1;
@@ -179,7 +181,7 @@ end //存入完毕
 
 
 
-LDPC_decode_top_0 u_LDPC_decode_top (
+LDPC_decode_top LDPC_decode_top_0 (
     .clk     (clk),
     .rst_n   (rst_n),
     .mode    (mode),

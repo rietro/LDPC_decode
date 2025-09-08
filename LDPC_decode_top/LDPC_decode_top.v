@@ -39,13 +39,12 @@ reg [`APP_addr_width-2:0] APP_addr_rd_max;
 
 reg [7:0] cnt_32;
 reg [7:0] cnt_128;
-reg [1:0] buffer_addr_0, buffer_addr_1, buffer_addr_2, buffer_addr_3, buffer_addr_4, buffer_addr_5,buffer_addr_6,buffer_addr_7;
 
 wire buffer_ready;
 wire decode_valid;
 wire [2:0] decode_valid_cnt;
 
-reg [`Zc*`DecOut_lifting-1:0] APPmsg_decode_out;
+wire [`Zc*`DecOut_lifting-1:0] APPmsg_decode_out;
 reg new_storaged_data_not_in_use; //暂存的数据，在存储完成后为1，在完全输入译码器后为0
 reg new_storaged_out_not_in_use; //暂存的数据，在存储完成后为1，在完全输入译码器后为0
 
@@ -478,6 +477,20 @@ begin
             out_cnt <= 0;
     end
 end
+
+reg [`Zc*`DecOut_lifting-1:0] APPmsg_decode_out_reg;
+always @(*)
+begin
+    if(!rst_n)
+    begin
+        APPmsg_decode_out_reg <= 0;
+    end
+    else if(decode_valid)
+    begin
+        APPmsg_decode_out_reg <= APPmsg_decode_out;
+    end
+end
+
 
 LDPC_Dec u_LDPC_Dec(
     .clk(clk),
