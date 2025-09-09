@@ -12,7 +12,7 @@ module LDPC_decode_top(
     input R_READY,
     output reg R_VALID,
     output reg R_LAST,
-    output [`Zc*`VWidth-1:0] R_DATA
+    output reg [`Zc-1:0] R_DATA
 );
 
 reg [2:0] iLs;
@@ -80,7 +80,7 @@ reg [`Zc*`VWidth-1:0] llr_in_24,llr_in_25,llr_in_26,llr_in_27,llr_in_28,llr_in_2
 
 //中转站暂存数据
 
-//根据模式实现不同码率的数据暂存 23码率需要24拍, 78码率需要16拍
+//根据模式实现不同码率的数据暂存 23码率需要32拍, 78码率需要24拍
 always @(posedge clk or negedge rst_n)
 begin
     if(!rst_n)
@@ -432,10 +432,16 @@ begin
     begin
         R_VALID <= 0;
     end
-    else if(new_storaged_out_not_in_use) //数据暂存完毕置1
-        R_VALID <=1;
-    else if( R_LAST || !new_storaged_out_not_in_use )  //数据存入译码器完毕置 0
-	    R_VALID <= 0;  
+    else if(R_READY && new_storaged_out_not_in_use) //数据暂存完毕置1
+    begin
+        if(R_LAST)
+            R_VALID <=0;
+        else 
+            R_VALID <=1;
+        
+    end
+    else if(!new_storaged_out_not_in_use)  //数据存入译码器完毕置 0
+	    R_VALID <= 0; 
 end
 
 always @(posedge clk or negedge rst_n) 
@@ -444,9 +450,9 @@ begin
     begin
         R_LAST <= 0;
     end
-    else if( out_cnt == 5'd31 && iLs == 1) //数据暂存完毕置1
+    else if( out_cnt == 5'd19 && iLs == 1) //
         R_LAST <=1;
-    else if( out_cnt == 5'd23 && iLs == 2 )  //数据存入译码器完毕置 0
+    else if( out_cnt == 5'd19 && iLs == 2 )  //
 	    R_LAST <= 1;  
 	else
 		R_LAST <= 0;  
@@ -462,24 +468,25 @@ begin
     begin
         out_cnt <= 0;
     end
-    else if(R_VALID && iLs == 1) //23码率
+    else if(R_VALID && iLs == 1) //23码率 //只取前21位
     begin
-        if( out_cnt < 5'd23)
+        if( out_cnt < 5'd20)
             out_cnt <= out_cnt + 5'd1;
-        else if (out_cnt == 5'd23)
+        else if (out_cnt == 5'd20)
             out_cnt <= 0;
     end
     else if(R_VALID && iLs == 2) //78码率
      begin
-        if( out_cnt < 5'd15)
+        if( out_cnt < 5'd20)
             out_cnt <= out_cnt + 5'd1;
-        else if (out_cnt == 5'd15)
+        else if (out_cnt == 5'd20) //只取前21位
             out_cnt <= 0;
     end
 end
 
 reg [`Zc*`DecOut_lifting-1:0] APPmsg_decode_out_reg;
-always @(*)
+
+always @(posedge clk or negedge rst_n)
 begin
     if(!rst_n)
     begin
@@ -490,6 +497,45 @@ begin
         APPmsg_decode_out_reg <= APPmsg_decode_out;
     end
 end
+
+always @(*)
+begin
+    if(!rst_n)
+    begin
+        R_DATA <= 0;
+    end
+    else if(R_VALID)
+    begin
+        case(out_cnt)
+            5'd0 : R_DATA <= APPmsg_decode_out_reg[`Zc*1-1 : `Zc*0];
+            5'd1 : R_DATA <= APPmsg_decode_out_reg[`Zc*2-1 : `Zc*1];
+            5'd2 : R_DATA <= APPmsg_decode_out_reg[`Zc*3-1 : `Zc*2];
+            5'd3 : R_DATA <= APPmsg_decode_out_reg[`Zc*4-1 : `Zc*3];
+            5'd4 : R_DATA <= APPmsg_decode_out_reg[`Zc*5-1 : `Zc*4];
+            5'd5 : R_DATA <= APPmsg_decode_out_reg[`Zc*6-1 : `Zc*5];
+            5'd6 : R_DATA <= APPmsg_decode_out_reg[`Zc*7-1 : `Zc*6];
+            5'd7 : R_DATA <= APPmsg_decode_out_reg[`Zc*8-1 : `Zc*7];
+            5'd8 : R_DATA <= APPmsg_decode_out_reg[`Zc*9-1 : `Zc*8];
+            5'd9 : R_DATA <= APPmsg_decode_out_reg[`Zc*10-1 : `Zc*9];
+            5'd10: R_DATA <= APPmsg_decode_out_reg[`Zc*11-1 : `Zc*10];
+            5'd11: R_DATA <= APPmsg_decode_out_reg[`Zc*12-1 : `Zc*11];
+            5'd12: R_DATA <= APPmsg_decode_out_reg[`Zc*13-1 : `Zc*12];
+            5'd13: R_DATA <= APPmsg_decode_out_reg[`Zc*14-1 : `Zc*13];
+            5'd14: R_DATA <= APPmsg_decode_out_reg[`Zc*15-1 : `Zc*14];
+            5'd15: R_DATA <= APPmsg_decode_out_reg[`Zc*16-1 : `Zc*15];
+            5'd16: R_DATA <= APPmsg_decode_out_reg[`Zc*17-1 : `Zc*16];
+            5'd17: R_DATA <= APPmsg_decode_out_reg[`Zc*18-1 : `Zc*17];
+            5'd18: R_DATA <= APPmsg_decode_out_reg[`Zc*19-1 : `Zc*18];
+            5'd19: R_DATA <= APPmsg_decode_out_reg[`Zc*20-1 : `Zc*19];
+            5'd20: R_DATA <= APPmsg_decode_out_reg[`Zc*21-1 : `Zc*20];
+            5'd21: R_DATA <= APPmsg_decode_out_reg[`Zc*22-1 : `Zc*21];
+        endcase
+    end
+    else 
+         R_DATA <= 0;
+end
+
+
 
 
 LDPC_Dec u_LDPC_Dec(

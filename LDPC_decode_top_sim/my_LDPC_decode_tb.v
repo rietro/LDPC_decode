@@ -54,7 +54,7 @@ always #5 clk = ~clk;
 wire W_READY,R_VALID,R_LAST;
 reg W_VALID,W_LAST,R_READY;
 reg [`Zc*`VWidth-1:0] W_DATA;
-wire [`Zc*`VWidth-1:0]R_DATA;
+wire [`Zc-1:0]R_DATA;
 
 reg [4:0] w_data_cnt;
 always @(posedge clk or negedge rst_n)
@@ -181,6 +181,7 @@ end //存入完毕
 
 
 
+
 LDPC_decode_top LDPC_decode_top_0 (
     .clk     (clk),
     .rst_n   (rst_n),
@@ -191,7 +192,7 @@ LDPC_decode_top LDPC_decode_top_0 (
     .W_LAST  (W_LAST),
     .W_DATA  (W_DATA),
 
-    .R_READY (R_READY),
+    .R_READY (1),
     .R_VALID (R_VALID),
     .R_LAST  (R_LAST),
     .R_DATA  (R_DATA)
